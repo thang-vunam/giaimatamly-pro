@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <!-- Google Analytics placeholder — thay G-XXXXXXXXXX bằng ID thật -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script> -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giải Mã Tâm Lý — Thấu hiểu hành vi, Làm chủ tâm trí | giaimatamly.pro</title>
+  <meta name="description" content="Website chính thức của kênh Giải Mã Tâm Lý — khám phá bí ẩn tâm lý con người, giải mã hành vi, hiệu ứng tâm lý và phát triển bản thân." />
+  <meta name="keywords" content="tâm lý học, giải mã hành vi, hiệu ứng tâm lý, phát triển bản thân, tâm lý học ứng dụng" />
+  <meta property="og:title" content="Giải Mã Tâm Lý — Thấu hiểu hành vi, Làm chủ tâm trí" />
+  <meta property="og:description" content="Khám phá bí ẩn tâm lý con người qua video, bài viết chuyên sâu về hành vi, hiệu ứng tâm lý và kỹ năng sống." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://giaimatamly.pro/" />
+  <meta property="og:image" content="https://giaimatamly.pro/logo.png" />
+  <link rel="canonical" href="https://giaimatamly.pro/" />
+
+  <!-- Preload -->
+  <link rel="preload" href="logo.png" as="image" />
+  <link rel="preload" href="style.css" as="style" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Giải Mã Tâm Lý",
+    "url": "https://giaimatamly.pro/",
+    "logo": "https://giaimatamly.pro/logo.png",
+    "description": "Kênh nội dung tâm lý học ứng dụng — giải mã hành vi, hiệu ứng tâm lý, phát triển bản thân.",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+84-939-913-131",
+      "contactType": "customer service",
+      "email": "thangvu.dht@gmail.com"
+    },
+    "sameAs": [
+      "https://www.youtube.com/@giaimatamly.official"
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="top-bar" id="header">
+  <div class="container nav">
+    <a href="/" class="brand">
+      <img src="logo.png" alt="Giải Mã Tâm Lý" class="brand-logo" />
+      <div class="brand-text">
+        <span class="brand-title">Giải Mã Tâm Lý</span>
+        <span class="brand-sub">Thấu hiểu hành vi — Làm chủ tâm trí</span>
+      </div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="/" class="active">Trang chủ</a>
+      <a href="#videos">Video</a>
+      <a href="#chu-de">Chủ đề</a>
+      <a href="#blog">Bài viết</a>
+      <a href="#ve-kenh">Về kênh</a>
+      <a href="#lien-he">Liên hệ</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<section id="hero" class="hero">
+  <div class="hero-bg">
+    <canvas id="neuralCanvas"></canvas>
+  </div>
+  <div class="container hero-grid">
+    <div class="hero-text">
+      <p class="tagline">🧠 Kênh YouTube: Giải Mã Tâm Lý</p>
+      <h1>Thấu hiểu hành vi<br/>Làm chủ tâm trí</h1>
+      <p class="hero-desc">
+        Khám phá những bí ẩn đằng sau mỗi hành vi con người — từ hiệu ứng tâm lý,
+        hồ sơ bí ẩn đến kỹ năng phát triển bản thân. Tất cả được giải mã qua video ngắn,
+        dễ hiểu và cuốn hút.
+      </p>
+      <div class="hero-actions">
+        <a href="https://www.youtube.com/@giaimatamly.official?sub_confirmation=1" target="_blank" rel="noopener" class="btn btn-primary" id="cta-subscribe">
+          ▶ Đăng ký kênh YouTube
+        </a>
+        <a href="#videos" class="btn btn-outline" id="cta-watch">
+          🎬 Xem video mới nhất
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <h2>🔥 Video nổi bật</h2>
+      <!--
+        ============================================================
+        [HƯỚNG DẪN THAY VIDEO NỔI BẬT]
+        Thay VIDEO_ID bằng ID video YouTube thật.
+        Ví dụ: nếu URL video là youtube.com/watch?v=abc123
+        thì thay tất cả VIDEO_ID bằng abc123
+        ============================================================
+      -->
+      <div class="lite-yt-facade"
+           style="background-image: url('https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg');"
+           onclick="this.innerHTML='<iframe src=\'https://www.youtube.com/embed/VIDEO_ID?autoplay=1\' frameborder=\'0\' allow=\'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\' allowfullscreen style=\'width:100%;height:100%;\'></iframe>'">
+        <div class="lite-play-btn"></div>
+      </div>
+      <a class="link-yt" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        Xem thêm trên YouTube →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VIDEO SHORTS ================= -->
+<section id="videos" class="section section-alt">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>Video <span class="gradient-text">Shorts</span> mới nhất</h2>
+      <p>Những video ngắn gọn, cuốn hút về tâm lý học — giúp bạn hiểu sâu hơn về con người trong vài phút.</p>
+    </div>
+    <div class="shorts-grid">
+      <a class="short-card fade-in" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/VIDEO_ID_1/oar2.jpg'); background-color: #1a1a2e;"></div>
+        <div class="short-info">
+          <h3>7 Dấu hiệu nhận biết người thao túng tâm lý</h3>
+        </div>
+      </a>
+      <a class="short-card fade-in" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/VIDEO_ID_2/oar2.jpg'); background-color: #1a1a2e;"></div>
+        <div class="short-info">
+          <h3>Hiệu ứng Dunning-Kruger: Tại sao người kém lại tự tin nhất?</h3>
+        </div>
+      </a>
+      <a class="short-card fade-in" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/VIDEO_ID_3/oar2.jpg'); background-color: #1a1a2e;"></div>
+        <div class="short-info">
+          <h3>5 Thủ thuật tâm lý giúp bạn thuyết phục bất kỳ ai</h3>
+        </div>
+      </a>
+      <a class="short-card fade-in" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/VIDEO_ID_4/oar2.jpg'); background-color: #1a1a2e;"></div>
+        <div class="short-info">
+          <h3>Ngôn ngữ cơ thể: Cách đọc vị người đối diện</h3>
+        </div>
+      </a>
+    </div>
+    <div style="text-align:center; margin-top:40px;">
+      <a href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener" class="btn btn-outline">
+        Xem tất cả video trên YouTube →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHỦ ĐỀ KHÁM PHÁ ================= -->
+<section id="chu-de" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>Chủ đề <span class="gradient-text">khám phá</span></h2>
+      <p>Những lĩnh vực tâm lý học hấp dẫn mà chúng tôi nghiên cứu và chia sẻ mỗi ngày.</p>
+    </div>
+    <div class="topics-grid">
+      <a class="topic-card fade-in" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        <div class="topic-icon">🔍</div>
+        <h3>Giải mã hành vi</h3>
+        <p>Phân tích hành vi con người trong giao tiếp, công sở và đời sống. Hiểu tại sao mọi người hành động như vậy.</p>
+        <span class="topic-link">Khám phá →</span>
+      </a>
+      <a class="topic-card fade-in" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        <div class="topic-icon">🕵️</div>
+        <h3>Hồ sơ bí ẩn</h3>
+        <p>Những câu chuyện bí ẩn được giải mã dưới góc nhìn tâm lý học — từ tội phạm đến hiện tượng kỳ lạ.</p>
+        <span class="topic-link">Khám phá →</span>
+      </a>
+      <a class="topic-card fade-in" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        <div class="topic-icon">💡</div>
+        <h3>Phát triển bản thân</h3>
+        <p>Kỹ năng tư duy, quản lý cảm xúc và xây dựng thói quen tốt dựa trên nền tảng khoa học tâm lý.</p>
+        <span class="topic-link">Khám phá →</span>
+      </a>
+      <a class="topic-card fade-in" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+        <div class="topic-icon">🧪</div>
+        <h3>Hiệu ứng tâm lý</h3>
+        <p>Khám phá những hiệu ứng tâm lý nổi tiếng ảnh hưởng đến quyết định và hành vi của chúng ta mỗi ngày.</p>
+        <span class="topic-link">Khám phá →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BLOG / BÀI VIẾT ================= -->
+<section id="blog" class="section section-alt">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>Bài viết <span class="gradient-text">nổi bật</span></h2>
+      <p>Phân tích chuyên sâu về tâm lý học, những kiến thức giúp bạn thấu hiểu bản thân và người xung quanh.</p>
+    </div>
+    <div class="blog-grid">
+      <article class="blog-card fade-in">
+        <span class="blog-tag">Tâm lý học</span>
+        <h3>10 Hiệu ứng tâm lý chi phối cuộc sống mà bạn không nhận ra</h3>
+        <p>Từ hiệu ứng hào quang đến thiên kiến xác nhận — những "bẫy" tâm lý đang âm thầm điều khiển mọi quyết định của bạn mỗi ngày.</p>
+        <span class="read-more">Đọc tiếp →</span>
+      </article>
+      <article class="blog-card fade-in">
+        <span class="blog-tag">Hành vi</span>
+        <h3>Cách nhận biết người đang nói dối qua ngôn ngữ cơ thể</h3>
+        <p>Khoa học đằng sau việc phát hiện nói dối — những tín hiệu phi ngôn ngữ mà FBI cũng sử dụng trong thẩm vấn.</p>
+        <span class="read-more">Đọc tiếp →</span>
+      </article>
+      <article class="blog-card fade-in">
+        <span class="blog-tag">Phát triển bản thân</span>
+        <h3>Quy tắc 2 phút: Thay đổi cuộc sống bằng thói quen nhỏ</h3>
+        <p>Làm thế nào để xây dựng thói quen tốt mà không cần ý chí sắt đá — phương pháp được khoa học chứng minh hiệu quả.</p>
+        <span class="read-more">Đọc tiếp →</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VỀ KÊNH ================= -->
+<section id="ve-kenh" class="section">
+  <div class="container about-grid">
+    <div class="about-content fade-in">
+      <h2>Về kênh <span style="background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Giải Mã Tâm Lý</span></h2>
+      <p>
+        <strong>Giải Mã Tâm Lý</strong> là kênh nội dung chuyên sâu về tâm lý học ứng dụng,
+        mang đến cho bạn những góc nhìn mới mẻ về hành vi con người, hiệu ứng tâm lý
+        và kỹ năng phát triển bản thân.
+      </p>
+      <p>
+        Chúng tôi tin rằng việc thấu hiểu tâm lý không chỉ giúp bạn hiểu người khác,
+        mà còn giúp bạn làm chủ chính mình — đưa ra quyết định sáng suốt hơn
+        trong công việc, tình cảm và cuộc sống.
+      </p>
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-number" id="statVideos">15+</div>
+          <div class="stat-label">Video</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="statTopics">4</div>
+          <div class="stat-label">Chủ đề</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="statSubs">Đang tăng</div>
+          <div class="stat-label">Subscribers</div>
+        </div>
+      </div>
+      <a href="https://www.youtube.com/@giaimatamly.official?sub_confirmation=1" target="_blank" rel="noopener" class="btn btn-primary" style="animation: none;">
+        ▶ Đăng ký theo dõi ngay
+      </a>
+    </div>
+    <div class="about-visual fade-in">
+      <img src="logo.png" alt="Giải Mã Tâm Lý Logo" class="about-avatar" />
+    </div>
+  </div>
+</section>
+
+<!-- ================= LIÊN HỆ ================= -->
+<section id="lien-he" class="section section-alt">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>Liên hệ & <span class="gradient-text">Kết nối</span></h2>
+      <p>Hãy kết nối với chúng tôi qua các kênh bên dưới.</p>
+    </div>
+    <div class="contact-grid fade-in">
+      <div class="contact-info">
+        <h3>📬 Thông tin liên hệ</h3>
+        <div class="contact-item">
+          <div class="contact-icon">✉️</div>
+          <div>
+            <span>Email</span><br/>
+            <a href="mailto:thangvu.dht@gmail.com">thangvu.dht@gmail.com</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📱</div>
+          <div>
+            <span>Điện thoại</span><br/>
+            <a href="tel:+84939913131">093 991 3131</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🌐</div>
+          <div>
+            <span>Website</span><br/>
+            <a href="https://giaimatamly.pro">giaimatamly.pro</a>
+          </div>
+        </div>
+      </div>
+      <div class="contact-connect">
+        <h3>🔗 Kết nối MXH</h3>
+        <ul class="social-links">
+          <li>
+            <a class="social-link" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
+              <span class="icon">▶</span> YouTube — @giaimatamly.official
+            </a>
+          </li>
+          <li>
+            <a class="social-link" href="#" target="_blank" rel="noopener">
+              <span class="icon">📘</span> Facebook — Sắp ra mắt
+            </a>
+          </li>
+          <li>
+            <a class="social-link" href="#" target="_blank" rel="noopener">
+              <span class="icon">🎵</span> TikTok — Sắp ra mắt
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <p>© <span id="year"></span> giaimatamly.pro — Giải Mã Tâm Lý. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="script.js" defer></script>
+</body>
+</html>
