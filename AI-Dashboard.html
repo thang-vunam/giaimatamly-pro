@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Agent - Giải Mã Tâm Lý</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Branding colors matching giaimatamly.pro */
+            --primary: #9b59f0; /* Neon Purple */
+            --primary-glow: rgba(155, 89, 240, 0.5);
+            --secondary: #00e5ff; /* Neon Cyan */
+            --bg-dark: #0a0a1a; /* Deep Space Black */
+            --bg-card: rgba(20, 20, 35, 0.7);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(155, 89, 240, 0.2);
+            --gradient: linear-gradient(135deg, #9b59f0, #00e5ff);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(155, 89, 240, 0.15), transparent 30%),
+                radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.1), transparent 30%);
+            background-attachment: fixed;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: rgba(10, 10, 26, 0.85);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+        .logo { font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
+        .logo i { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 12px;
+            color: var(--text-muted);
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(155, 89, 240, 0.1);
+            color: var(--text-light);
+        }
+        .nav-item.active { border-left: 3px solid var(--primary); font-weight: 500;}
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 32px 48px;
+            overflow-y: auto;
+        }
+        
+        /* Glass Card */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        h2 { font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        
+        /* Form Elements */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
+        input[type="text"], input[type="password"], select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 10px rgba(155, 89, 240, 0.2);
+        }
+        textarea { resize: vertical; min-height: 120px; font-family: inherit; }
+        
+        /* Buttons */
+        .btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .btn-primary {
+            background: var(--gradient);
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 25px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+        
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        
+        /* Tags & Indicators */
+        .status-badge {
+            padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+        }
+        .status-good { background: rgba(0, 229, 255, 0.1); color: var(--secondary); border: 1px solid rgba(0, 229, 255, 0.3); }
+        .status-warn { background: rgba(234, 179, 8, 0.1); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+
+        /* Settings Modal */
+        #settings-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px); z-index: 50; align-items: center; justify-content: center;
+        }
+        #settings-modal.active { display: flex; }
+        .modal-content { max-width: 500px; width: 100%; border: 1px solid var(--secondary); }
+        
+        .hidden { display: none !important; }
+        
+        /* Loader */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--secondary);
+            border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Trending Cards */
+        .suggest-card {
+            background: rgba(155, 89, 240, 0.05);
+            border: 1px solid rgba(155, 89, 240, 0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .suggest-card:hover {
+            background: rgba(155, 89, 240, 0.15);
+            border-color: var(--secondary);
+            transform: translateX(6px);
+        }
+        .suggest-card .num {
+            background: var(--gradient);
+            color: white;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        #suggest-panel { display: none; margin-top: 15px; }
+
+        /* Preview iframe */
+        .preview-frame {
+            width: 100%; height: 500px; border: 1px solid var(--border);
+            border-radius: 12px; background: white;
+        }
+        .tab-bar { display: flex; gap: 0; margin-bottom: 0; }
+        .tab-btn {
+            padding: 10px 20px; cursor: pointer; font-size: 0.9rem; font-weight: 500;
+            background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1); border-bottom: none;
+            border-radius: 10px 10px 0 0; transition: all 0.2s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* SEO bar */
+        .seo-bar { height: 6px; border-radius: 3px; margin-top: 6px; transition: width 0.3s; }
+        .seo-label { font-size: 0.75rem; margin-top: 4px; font-weight: 600; }
+
+        /* Mode toggle */
+        .mode-toggle { display: flex; gap: 0; margin-bottom: 20px; }
+        .mode-btn {
+            flex: 1; padding: 12px; cursor: pointer; text-align: center; font-weight: 600;
+            background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; font-size: 0.95rem;
+        }
+        .mode-btn:first-child { border-radius: 10px 0 0 10px; }
+        .mode-btn:last-child { border-radius: 0 10px 10px 0; }
+        .mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .mode-btn i { margin-right: 6px; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo"><i class="fa-solid fa-brain"></i> AI Tâm Lý</div>
+        <div class="nav-item active" onclick="switchTab('create')"><i class="fa-solid fa-pen-nib"></i> Viết Bài Mới</div>
+        <div class="nav-item" onclick="openSettings()"><i class="fa-solid fa-gear"></i> Cấu hình API</div>
+        <div style="margin-top: auto;">
+            <p style="font-size: 11px; color: var(--text-muted); text-align: center;">Powered by Gemini 1.5 Flash</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="header" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 2rem; margin-bottom: 5px;">AI Biên Tập Viên</h1>
+                <p style="color: var(--text-muted);">Sản xuất nội dung tự động cho giaimatamly.pro</p>
+            </div>
+            <div id="connection-status" class="status-badge status-warn"><i class="fa-solid fa-link-slash"></i> Chưa cấu hình API</div>
+        </div>
+
+        <!-- BƯỚC 1: NHẬP LIỆU -->
+        <div id="step-1" class="glass-card">
+            <h2><i class="fa-solid fa-wand-magic-sparkles"></i> 1. Sáng tạo Nội dung</h2>
+            
+            <!-- CHỌN CHẾ ĐỘ -->
+            <div class="mode-toggle">
+                <div class="mode-btn active" onclick="switchMode('ai')"><i class="fa-solid fa-robot"></i> AI viết bài</div>
+                <div class="mode-btn" onclick="switchMode('manual')"><i class="fa-solid fa-pen"></i> Tự viết bài</div>
+            </div>
+
+            <!-- CHẾ ĐỘ AI -->
+            <div id="mode-ai">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Chuyên mục</label>
+                        <select id="input-category">
+                            <option value="giai-ma-hanh-vi">Giải mã hành vi (giai-ma-hanh-vi/)</option>
+                            <option value="ho-so-bi-an">Hồ sơ bí ẩn (ho-so-bi-an/)</option>
+                            <option value="phat-trien-ban-than">Phát triển bản thân (phat-trien-ban-than/)</option>
+                            <option value="hieu-ung-tam-ly">Hiệu ứng tâm lý (hieu-ung-tam-ly/)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hành động</label>
+                        <button class="btn" id="btn-suggest" onclick="suggestViralTopic()" style="width: 100%; justify-content: center; border-color: var(--secondary); color: var(--secondary);">
+                            <i class="fa-solid fa-fire"></i> Gợi ý Chủ đề Trending
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel gợi ý 3 chủ đề -->
+                <div id="suggest-panel">
+                    <label style="margin-bottom: 10px; display: block;"><i class="fa-solid fa-lightbulb" style="color: #facc15;"></i> Chọn 1 chủ đề bên dưới để viết bài:</label>
+                    <div id="suggest-list"></div>
+                </div>
+
+                <div class="grid-2" style="margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Từ khóa chính (Focus Keyword) <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="input-topic" placeholder="Ví dụ: Hiệu ứng Dunning-Kruger, thao túng tâm lý..." />
+                    </div>
+                    <div class="form-group">
+                        <label>Từ khóa phụ (LSI) <span style="color: #64748b; font-weight: normal;">(Bỏ trống AI tự sinh)</span></label>
+                        <input type="text" id="input-secondary-keywords" placeholder="Ví dụ: tư duy phản biện, tự nhận thức..." />
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="btn-generate" onclick="generateDraft()">
+                    <span><i class="fa-solid fa-microchip"></i> Viết bản nháp chuyên sâu (~15s)</span>
+                </button>
+            </div>
+
+            <!-- CHẾ ĐỘ TỰ VIẾT -->
+            <div id="mode-manual" style="display: none;">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Chuyên mục</label>
+                        <select id="manual-category">
+                            <option value="giai-ma-hanh-vi">Giải mã hành vi (giai-ma-hanh-vi/)</option>
+                            <option value="ho-so-bi-an">Hồ sơ bí ẩn (ho-so-bi-an/)</option>
+                            <option value="phat-trien-ban-than">Phát triển bản thân (phat-trien-ban-than/)</option>
+                            <option value="hieu-ung-tam-ly">Hiệu ứng tâm lý (hieu-ung-tam-ly/)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Từ khóa chính (Focus Keyword)</label>
+                        <input type="text" id="manual-keyword" placeholder="Ví dụ: ngôn ngữ cơ thể..." />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nội dung bài viết <span style="color: var(--text-muted);">(Viết HTML hoặc paste văn bản thuần)</span></label>
+                    <textarea id="manual-content" style="min-height: 200px;" placeholder="Nhập nội dung vào đây..."></textarea>
+                </div>
+                
+                <button class="btn btn-primary" id="btn-manual-seo" onclick="manualSeoOptimize()">
+                    <span><i class="fa-solid fa-magnifying-glass-chart"></i> AI Tối ưu SEO & Chuẩn bị đăng</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- BƯỚC 2: DUYỆT BÀI & SEO -->
+        <div id="step-3" class="glass-card hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0;"><i class="fa-solid fa-clipboard-check"></i> 2. Review & Xuất bản</h2>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" id="btn-publish" onclick="publishToGithub()">
+                        <i class="fa-brands fa-github"></i> Duyệt & Đăng lên Website
+                    </button>
+                    <button class="btn" id="btn-delete" onclick="deleteArticle()" style="background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #f87171;">
+                        <i class="fa-solid fa-trash"></i> Xóa bài
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <!-- Bên trái: Preview / Code -->
+                <div>
+                    <div class="form-group">
+                        <label>Đường dẫn File (Slug URL)</label>
+                        <input type="text" id="review-slug" placeholder="hieu-ung-tam-ly-hay" />
+                    </div>
+                    <div class="tab-bar">
+                        <div class="tab-btn active" onclick="switchPreviewTab('preview')"><i class="fa-solid fa-eye"></i> Xem trước</div>
+                        <div class="tab-btn" onclick="switchPreviewTab('code')"><i class="fa-solid fa-code"></i> Mã HTML</div>
+                    </div>
+                    <div id="preview-pane">
+                        <iframe id="preview-iframe" class="preview-frame"></iframe>
+                    </div>
+                    <div id="code-pane" style="display: none;">
+                        <textarea id="review-html" style="height: 500px; font-size: 13px; border-radius: 0 0 12px 12px; background: rgba(0,0,0,0.5);"></textarea>
+                    </div>
+                </div>
+
+                <!-- Bên phải: SEO Panel -->
+                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--secondary);"><i class="fa-solid fa-chart-simple"></i> Điểm SEO RankMath</h3>
+                    
+                    <div class="form-group">
+                        <label>Thẻ Title <span style="color:var(--text-muted)">(<span id="title-count">0</span> ký tự, chuẩn: 30–60)</span></label>
+                        <input type="text" id="review-title" oninput="updateSeoScores()"/>
+                        <div class="seo-bar" id="title-bar"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px;">
+                            <div class="seo-label" id="title-status"></div>
+                            <div class="seo-label" id="title-keyword-status" style="font-size: 0.8rem;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Meta Description <span style="color:var(--text-muted)">(<span id="desc-count">0</span> ký tự, chuẩn: 120–160)</span></label>
+                        <textarea id="review-desc" style="min-height: 80px;" oninput="updateSeoScores()"></textarea>
+                        <div class="seo-bar" id="desc-bar"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px;">
+                            <div class="seo-label" id="desc-status"></div>
+                            <div class="seo-label" id="desc-keyword-status" style="font-size: 0.8rem;"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn" id="btn-autofix" onclick="autoFixSeo()" style="width: 100%; justify-content: center; margin-top: 10px;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CẤU HÌNH MODAL -->
+    <div id="settings-modal">
+        <div class="glass-card modal-content" style="position: relative;">
+            <button class="btn" style="position: absolute; right: 10px; top: 10px; padding: 5px 10px;" onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Cấu hình Bảo mật API</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Lưu trực tiếp trên LocalStorage của trình duyệt, không chia sẻ với bên thứ ba.</p>
+            
+            <div class="form-group">
+                <label>Google Gemini API Key</label>
+                <input type="password" id="cfg-gemini" placeholder="AI Studio Key..." />
+            </div>
+            <div class="form-group">
+                <label>GitHub Personal Access Token</label>
+                <input type="password" id="cfg-github" placeholder="ghp_xxx..." />
+            </div>
+            <div class="form-group">
+                <label>GitHub Repo Owner</label>
+                <input type="text" id="cfg-owner" placeholder="Username (ví dụ: thang-vunam)" />
+            </div>
+            <div class="form-group">
+                <label>Tên Repository</label>
+                <input type="text" id="cfg-repo" value="giaimatamly-pro" />
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn btn-primary" onclick="saveSettings()" style="flex: 1; justify-content: center;">Lưu Cấu Hình</button>
+                <button class="btn" onclick="testApiConnection()" style="flex: 1; justify-content: center;"><i class="fa-solid fa-vial"></i> Test API</button>
+            </div>
+            <div id="test-result" style="margin-top: 10px; font-size: 13px; padding: 8px; border-radius: 8px; display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let memoryStorage = {};
+        function checkStorage() { try { const s = window.localStorage; s.setItem('__test__', '1'); s.removeItem('__test__'); return true; } catch(e) { return false; } }
+        const hasStorage = checkStorage();
+        function getItemSafe(key) { try { return hasStorage ? window.localStorage.getItem(key) : memoryStorage[key]; } catch(e) { return memoryStorage[key]; } }
+        function setItemSafe(key, val) { try { if(hasStorage) window.localStorage.setItem(key, val); } catch(e) {} memoryStorage[key] = val; }
+
+        window.addEventListener('DOMContentLoaded', () => { loadSettings(); updateConnectionStatus(); });
+
+        function switchMode(mode) {
+            const btns = document.querySelectorAll('.mode-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            if(mode === 'ai') {
+                btns[0].classList.add('active');
+                document.getElementById('mode-ai').style.display = 'block';
+                document.getElementById('mode-manual').style.display = 'none';
+            } else {
+                btns[1].classList.add('active');
+                document.getElementById('mode-ai').style.display = 'none';
+                document.getElementById('mode-manual').style.display = 'block';
+            }
+        }
+
+        function loadSettings() {
+            document.getElementById('cfg-gemini').value = getItemSafe('gemini_key') || '';
+            document.getElementById('cfg-github').value = getItemSafe('github_token') || '';
+            document.getElementById('cfg-owner').value = getItemSafe('github_owner') || 'thang-vunam';
+            document.getElementById('cfg-repo').value = getItemSafe('github_repo') || 'giaimatamly-pro';
+        }
+
+        function saveSettings() {
+            setItemSafe('gemini_key', document.getElementById('cfg-gemini').value);
+            setItemSafe('github_token', document.getElementById('cfg-github').value);
+            setItemSafe('github_owner', document.getElementById('cfg-owner').value);
+            setItemSafe('github_repo', document.getElementById('cfg-repo').value);
+            updateConnectionStatus();
+            closeSettings();
+        }
+
+        function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); }
+        function openSettings() { document.getElementById('settings-modal').classList.add('active'); }
+
+        async function testApiConnection() {
+            const apiKey = document.getElementById('cfg-gemini').value;
+            const resEl = document.getElementById('test-result');
+            if(!apiKey) return;
+            resEl.style.display = 'block'; resEl.innerText = 'Đang kiểm tra...';
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                if(res.ok) { resEl.style.color = '#00e5ff'; resEl.innerText = '✅ API hợp lệ!'; }
+                else throw new Error('Key không đúng');
+            } catch(e) { resEl.style.color = '#ef4444'; resEl.innerText = '❌ Lỗi: ' + e.message; }
+        }
+
+        function updateConnectionStatus() {
+            const badge = document.getElementById('connection-status');
+            if(getItemSafe('gemini_key') && getItemSafe('github_token')) {
+                badge.className = 'status-badge status-good';
+                badge.innerHTML = '<i class="fa-solid fa-link"></i> Đã Kết Nối';
+            } else {
+                badge.className = 'status-badge status-warn';
+                badge.innerHTML = '<i class="fa-solid fa-link-slash"></i> Thiếu API';
+            }
+        }
+
+        async function callGemini(apiKey, prompt, useSearch = false) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+            const body = { contents: [{ parts: [{text: prompt}] }] };
+            
+            // Kích hoạt Google Search Grounding nếu được yêu cầu
+            if (useSearch) {
+                body.tools = [{ google_search: {} }];
+            }
+
+            const res = await fetch(url, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if(!res.ok) throw new Error(data.error?.message || "Lỗi API");
+            return data.candidates[0].content.parts[0].text;
+        }
+
+        async function suggestViralTopic() {
+            const key = getItemSafe('gemini_key');
+            if(!key) return alert("Vui lòng cấu hình Gemini API Key.");
+            const btn = document.getElementById('btn-suggest');
+            btn.innerHTML = '<div class="loader"></div> Đang tìm trên Google & YouTube...';
+            try {
+                const category = document.getElementById('input-category').value;
+                let context = '';
+                if(category === 'giai-ma-hanh-vi') context = 'giải mã hành vi, ngôn ngữ cơ thể, đọc vị người khác, tâm lý học giao tiếp đang gây chú ý.';
+                else if(category === 'ho-so-bi-an') context = 'hồ sơ tội phạm, tâm lý học tội phạm, các hiện tượng tâm lý kỳ bí, rùng rợn nhưng có giải thích khoa học.';
+                else if(category === 'hieu-ung-tam-ly') context = 'các hiệu ứng tâm lý thú vị, ảo giác tâm lý đang được ứng dụng trong marketing, xã hội hoặc đời sống gần đây.';
+                else context = 'kỹ năng phát triển bản thân, thay đổi thói quen, góc nhìn tâm lý giúp thành công đang hot trên mạng xã hội.';
+                
+                // Prompt ép AI dùng Search Grounding để quét chéo Google và YouTube
+                const prompt = `Bạn là biên tập viên kênh YouTube "Giải Mã Tâm Lý". Dựa trên xu hướng mạng xã hội hiện nay, hãy SỬ DỤNG CÔNG CỤ TÌM KIẾM ĐỂ QUÉT ĐỒNG THỜI 2 LUỒNG DỮ LIỆU:
+1. Google News / Web: Các bài viết tâm lý học mới nhất.
+2. YouTube: Tìm kiếm với cú pháp 'site:youtube.com tâm lý học' hoặc các video đang viral về chủ đề tâm lý.
+
+Dựa trên dữ liệu thu thập được về chủ đề: [${context}], hãy đề xuất 3 tiêu đề bài viết (hoặc kịch bản video ngắn) cực kỳ cuốn hút, có chút bí ẩn và khoa học.
+Trả về định dạng JSON mảng: [{"title":"Tiêu đề cụ thể", "reason":"Lý do chọn dựa trên trend hiện tại (nêu rõ trend nếu có)"}]
+CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
+                
+                // Truyền true để kích hoạt Search Grounding
+                const text = await callGemini(key, prompt, true);
+                let cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                const suggestions = JSON.parse(cleaned);
+                
+                const list = document.getElementById('suggest-list');
+                list.innerHTML = '';
+                suggestions.forEach((s, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'suggest-card';
+                    card.innerHTML = `<div class="num">${i+1}</div><div><div style="font-weight:600; color:white; margin-bottom:3px;">${s.title}</div><div style="font-size:0.8rem; color:var(--text-muted);">${s.reason}</div></div>`;
+                    card.onclick = () => { document.getElementById('input-topic').value = s.title; document.getElementById('suggest-panel').style.display = 'none'; };
+                    list.appendChild(card);
+                });
+                document.getElementById('suggest-panel').style.display = 'block';
+            } catch (e) { alert("Lỗi: " + e.message); } 
+            finally { btn.innerHTML = '<i class="fa-solid fa-fire"></i> Gợi ý Chủ đề Trending'; }
+        }
+
+        function switchPreviewTab(tab) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            if(tab === 'preview') {
+                tabs[0].classList.add('active');
+                document.getElementById('preview-pane').style.display = 'block';
+                document.getElementById('code-pane').style.display = 'none';
+                const html = document.getElementById('review-html').value;
+                const iframe = document.getElementById('preview-iframe');
+                if(html) iframe.srcdoc = html.replace('<head>', '<head><base href="https://giaimatamly.pro/">');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('preview-pane').style.display = 'none';
+                document.getElementById('code-pane').style.display = 'block';
+            }
+        }
+
+        async function generateDraft() {
+            const topic = document.getElementById('input-topic').value;
+            const secondary = document.getElementById('input-secondary-keywords').value || '';
+            const key = getItemSafe('gemini_key');
+            if(!topic || !key) return alert("Vui lòng nhập Từ khóa chính và API Key.");
+            const category = document.getElementById('input-category').value;
+            const btn = document.getElementById('btn-generate');
+            btn.innerHTML = '<div class="loader"></div> AI Đang Viết Bản Nháp...';
+            btn.disabled = true;
+            
+            const prompt = `Bạn là Chuyên gia Tâm lý học, biên tập viên cho kênh "Giải Mã Tâm Lý". Viết cuốn hút, kể chuyện (storytelling) nhưng khoa học.
+
+YÊU CẦU SEO RANKMATH 100/100 (BẮT BUỘC):
+1. TỪ KHÓA CHÍNH: "${topic}". Phải xuất hiện ở: Title, Meta Desc, Đoạn mở bài (10% đầu tiên), ít nhất 1 thẻ H2, và đoạn kết bài.
+2. TỪ KHÓA PHỤ: "${secondary}". Phân bổ tự nhiên vào H2, H3 và thân bài.
+3. CẤU TRÚC HTML:
+   - Dùng <h2>, <h3> có id='...' rõ ràng.
+   - NGAY SAU ĐOẠN MỞ BÀI, tự động tạo 1 Mục lục (Table of Contents) bọc trong <div class='toc'><strong>Nội dung chính</strong><ul><li><a href='#id'>...</a></li></ul></div>.
+   - External Link: Chèn ít nhất 1 link (target='_blank' rel='nofollow') tới Wikipedia hoặc các trang nghiên cứu uy tín về tâm lý học.
+   - Internal Link: Chèn ít nhất 1 link (ví dụ: <a href='/'>Trang chủ Giải Mã Tâm Lý</a> hoặc <a href='/${category}/'>các bài viết cùng chủ đề</a>).
+   - In đậm (<strong>) từ khóa và các khái niệm quan trọng.
+4. KHÔNG DÙNG DẤU NGOẶC KÉP (") BÊN TRONG GIÁ TRỊ HTML HOẶC JSON để tránh lỗi parse. Luôn dùng nháy đơn (').
+
+Trả về JSON CHÍNH XÁC:
+{"title":"Chứa từ khóa. 40-55 ký tự","slug":"url-khong-dau-ngan-gon","metaDescription":"Chứa từ khóa. 120-150 ký tự","htmlContent":"Mã HTML bài viết hoàn chỉnh gồm Mục Lục, Link và các thẻ H chuẩn SEO","imagePrompt":"10 từ tiếng Anh mô tả ảnh tâm lý học","tags":["Tâm lý","..."]}`;
+
+            try {
+                const response = await callGemini(key, prompt);
+                let cleaned = response.replace(/```json/g, '').replace(/```/g, '').trim();
+                cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ch => (ch === '\\n' || ch === '\\r') ? ' ' : '');
+                const data = JSON.parse(cleaned);
+
+                document.getElementById('review-title').value = data.title;
+                document.getElementById('review-slug').value = data.slug;
+                document.getElementById('review-desc').value = data.metaDescription;
+                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, data.htmlContent, data.imagePrompt);
+                
+                updateSeoScores();
+                document.getElementById('step-3').classList.remove('hidden');
+                switchPreviewTab('preview');
+                document.getElementById('step-3').scrollIntoView({ behavior: 'smooth' });
+            } catch(e) { alert("Lỗi: " + e.message); } 
+            finally { btn.innerHTML = '<span><i class="fa-solid fa-microchip"></i> Viết bản nháp chuyên sâu (~15s)</span>'; btn.disabled = false; }
+        }
+
+        async function manualSeoOptimize() {
+            const key = getItemSafe('gemini_key');
+            const content = document.getElementById('manual-content').value;
+            const category = document.getElementById('manual-category').value;
+            const topic = document.getElementById('manual-keyword').value;
+            if(!key || !content) return;
+            const btn = document.getElementById('btn-manual-seo');
+            btn.innerHTML = '<div class="loader"></div> Đang tối ưu SEO...';
+            btn.disabled = true;
+            
+            const prompt = `Phân tích nội dung thô sau và CẤU TRÚC LẠI THÀNH HTML CHUẨN SEO RANKMATH 100/100.
+TỪ KHÓA CHÍNH CẦN TỐI ƯU: "${topic}".
+
+YÊU CẦU:
+1. Đảm bảo từ khóa chính xuất hiện ở Mở bài, H2, Kết bài.
+2. Thêm các thẻ <h2 id='...'> và <h3 id='...'> cho bài viết.
+3. Tạo Mục lục (Table of Contents) bằng <div class='toc'>...</div> ngay sau mở bài liên kết đến các id của H2, H3.
+4. Tự động chèn 1 External link (uy tín) và 1 Internal link (<a href='/${category}/'>) nếu phù hợp.
+5. In đậm các từ khóa. 
+6. Bọc nội dung trong thẻ <p>, <ul>, <li>. Chỉ trả về chuỗi JSON, dùng nháy đơn (') cho các thuộc tính HTML.
+
+Nội dung thô: ${content}
+
+Trả về JSON: {"title":"...","slug":"...","metaDescription":"...","htmlContent":"...","imagePrompt":"...","tags":[]}`;
+
+            try {
+                const response = await callGemini(key, prompt);
+                let cleaned = response.replace(/```json/g, '').replace(/```/g, '').trim();
+                cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, ch => (ch === '\\n' || ch === '\\r') ? ' ' : '');
+                const data = JSON.parse(cleaned);
+                
+                document.getElementById('review-title').value = data.title;
+                document.getElementById('review-slug').value = data.slug;
+                document.getElementById('review-desc').value = data.metaDescription;
+                document.getElementById('input-category').value = category;
+                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, data.htmlContent, data.imagePrompt);
+                
+                updateSeoScores();
+                document.getElementById('step-3').classList.remove('hidden');
+                switchPreviewTab('preview');
+            } catch(e) { alert("Lỗi: " + e.message); } 
+            finally { btn.innerHTML = '<span><i class="fa-solid fa-magnifying-glass-chart"></i> AI Tối ưu SEO & Chuẩn bị đăng</span>'; btn.disabled = false; }
+        }
+
+        function updateSeoScores() {
+            const titleEl = document.getElementById('review-title');
+            const descEl = document.getElementById('review-desc');
+            
+            const isManualMode = document.getElementById('mode-manual').style.display !== 'none';
+            const focusKwInput = isManualMode ? document.getElementById('manual-keyword') : document.getElementById('input-topic'); 
+            
+            const tTextVal = titleEl.value;
+            const dTextVal = descEl.value;
+            const focusKeyword = focusKwInput ? focusKwInput.value.trim().toLowerCase() : '';
+
+            const tLen = tTextVal.length;
+            const dLen = dTextVal.length;
+            document.getElementById('title-count').innerText = tLen;
+            document.getElementById('desc-count').innerText = dLen;
+
+            // 1. Length Check
+            let tColor, tText, tBarW;
+            if(tLen === 0) { tColor = '#64748b'; tText = 'Chưa nhập'; tBarW = 0; }
+            else if(tLen < 30) { tColor = '#facc15'; tText = '⚠️ Hơi ngắn (thêm ' + (30 - tLen) + ' ký tự)'; tBarW = (tLen/60)*100; }
+            else if(tLen <= 60) { tColor = '#00e5ff'; tText = '✅ Chuẩn SEO - Tiêu đề hoàn hảo!'; tBarW = (tLen/60)*100; }
+            else { tColor = '#f87171'; tText = '❌ Quá dài! Google sẽ cắt mất ' + (tLen - 60) + ' ký tự'; tBarW = 100; }
+
+            let dColor, dText, dBarW;
+            if(dLen === 0) { dColor = '#64748b'; dText = 'Chưa nhập'; dBarW = 0; }
+            else if(dLen < 120) { dColor = '#facc15'; dText = '⚠️ Hơi ngắn (thêm ' + (120 - dLen) + ' ký tự)'; dBarW = (dLen/160)*100; }
+            else if(dLen <= 160) { dColor = '#00e5ff'; dText = '✅ Chuẩn SEO - Mô tả hoàn hảo!'; dBarW = (dLen/160)*100; }
+            else { dColor = '#f87171'; dText = '❌ Quá dài! Google sẽ cắt mất ' + (dLen - 160) + ' ký tự'; dBarW = 100; }
+
+            const tEl = document.getElementById('title-status');
+            const dEl = document.getElementById('desc-status');
+            const tBar = document.getElementById('title-bar');
+            const dBar = document.getElementById('desc-bar');
+
+            tEl.innerText = tText; tEl.style.color = tColor;
+            dEl.innerText = dText; dEl.style.color = dColor;
+            tBar.style.width = tBarW + '%'; tBar.style.background = tColor;
+            dBar.style.width = dBarW + '%'; dBar.style.background = dColor;
+
+            // 2. Keyword Check (RankMath Style - Smart Match)
+            const kwTitleEl = document.getElementById('title-keyword-status');
+            const kwDescEl = document.getElementById('desc-keyword-status');
+
+            if (!focusKeyword) {
+                kwTitleEl.innerHTML = '';
+                kwDescEl.innerHTML = '';
+            } else {
+                if (smartKeywordMatch(tTextVal, focusKeyword)) {
+                    kwTitleEl.innerHTML = '<span style="color: #00e5ff;"><i class="fa-solid fa-check-double"></i> Chứa Focus Keyword</span>';
+                } else {
+                    kwTitleEl.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-xmark"></i> Thiếu Focus Keyword</span>';
+                }
+
+                if (smartKeywordMatch(dTextVal, focusKeyword)) {
+                    kwDescEl.innerHTML = '<span style="color: #00e5ff;"><i class="fa-solid fa-check-double"></i> Chứa Focus Keyword</span>';
+                } else {
+                    kwDescEl.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-xmark"></i> Thiếu Focus Keyword</span>';
+                }
+            }
+        }
+
+        function smartKeywordMatch(text, keyword) {
+            const textLower = text.toLowerCase();
+            const kwLower = keyword.toLowerCase();
+            if (textLower.includes(kwLower)) return true;
+            const kwWords = kwLower.split(/[\\s,;:]+/).filter(w => w.length >= 2);
+            if (kwWords.length <= 2) return false;
+            const matchedCount = kwWords.filter(w => textLower.includes(w)).length;
+            return matchedCount === kwWords.length;
+        }
+
+        async function autoFixSeo() {
+            const key = getItemSafe('gemini_key');
+            if(!key) return alert('Vui lòng cấu hình API Key trước!');
+
+            const curTitle = document.getElementById('review-title').value;
+            const curDesc = document.getElementById('review-desc').value;
+            const tLen = curTitle.length;
+            const dLen = curDesc.length;
+
+            const isManualMode = document.getElementById('mode-manual').style.display !== 'none';
+            const focusKwInput = isManualMode ? document.getElementById('manual-keyword') : document.getElementById('input-topic'); 
+            const focusKeyword = focusKwInput ? focusKwInput.value.trim() : '';
+
+            const missTitleKw = focusKeyword && !smartKeywordMatch(curTitle, focusKeyword);
+            const missDescKw = focusKeyword && !smartKeywordMatch(curDesc, focusKeyword);
+
+            const needFixTitle = tLen < 30 || tLen > 60 || missTitleKw;
+            const needFixDesc = dLen < 120 || dLen > 160 || missDescKw;
+            
+            if(!needFixTitle && !needFixDesc) {
+                alert('✅ Title và Description đã chuẩn SEO rồi!');
+                return;
+            }
+
+            const btn = document.getElementById('btn-autofix');
+            const issues = [];
+            if(needFixTitle && missTitleKw) issues.push('Chèn keyword vào Title');
+            else if(needFixTitle) issues.push('Sửa độ dài Title');
+            if(needFixDesc && missDescKw) issues.push('Chèn keyword vào Desc');
+            else if(needFixDesc) issues.push('Sửa độ dài Desc');
+            btn.innerHTML = `<div class="loader"></div> Đang sửa: ${issues.join(' + ')}...`;
+            btn.disabled = true;
+
+            const prompt = `Viết lại cho tôi. Trả về JSON: {"title":"...", "desc":"..."}. KHÔNG giải thích.
+Title hiện tại: "${curTitle}". ${needFixTitle ? 'Viết lại chuẩn 40-55 ký tự' + (focusKeyword ? ' BẮT BUỘC chứa từ khóa: ' + focusKeyword : '') : 'Giữ nguyên.'}
+Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 130-150 ký tự' + (focusKeyword ? ' BẮT BUỘC chứa từ khóa: ' + focusKeyword : '') : 'Giữ nguyên.'}`;
+
+            try {
+                let resp = await callGemini(key, prompt);
+                let cleaned = resp.replace(/```json/g, '').replace(/```/g, '').trim();
+                let fix = JSON.parse(cleaned);
+
+                if(fix.title && needFixTitle) document.getElementById('review-title').value = fix.title;
+                if(fix.desc && needFixDesc) document.getElementById('review-desc').value = fix.desc;
+                
+                updateSeoScores();
+                btn.innerHTML = '<i class="fa-solid fa-check" style="color:#00e5ff;"></i> Đã sửa xong!';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO';
+                    btn.disabled = false;
+                }, 1500);
+            } catch(e) {
+                alert('Lỗi Auto-fix: ' + e.message);
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO';
+                btn.disabled = false;
+            }
+        }
+
+        function buildTemplate(title, desc, category, body, imagePrompt) {
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt || 'mysterious psychological concept neon cyberpunk')}?width=800&height=400&nologo=true`;
+            return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${title} | giaimatamly.pro</title>
+  <meta name="description" content="${desc}">
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* Inline preview style */
+    body { background: #0a0a1a; color: #f8fafc; font-family: 'Inter', sans-serif; line-height: 1.7; }
+    .article-container { max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1 { color: #fff; font-size: 2rem; margin-bottom: 20px; }
+    
+    /* Tối ưu UX/UI cho Heading: Dùng màu nhạt dịu mắt, tránh dùng Neon 100% gây nhức mắt */
+    h2 { 
+        color: #e2e8f0; 
+        font-size: 1.6rem; 
+        margin: 40px 0 20px; 
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(155, 89, 240, 0.2);
+        scroll-margin-top: 80px; 
+    }
+    h3 { 
+        color: #d8b4fe; /* Tím pastel nhẹ, rất dịu */
+        font-size: 1.3rem; 
+        margin: 30px 0 15px; 
+        scroll-margin-top: 80px; 
+    }
+    p { margin-bottom: 18px; color: #cbd5e1; font-size: 1.05rem; }
+    
+    /* Tối ưu Link: Màu Cyan pastel, có gạch dưới nhạt để dễ nhận biết mà không chói */
+    a { color: #67e8f9; text-decoration: none; border-bottom: 1px solid rgba(103, 232, 249, 0.3); transition: all 0.2s; }
+    a:hover { color: #22d3ee; border-bottom-color: #22d3ee; }
+    
+    img.cover { width: 100%; border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(155, 89, 240, 0.3); }
+    ul, ol { margin-bottom: 18px; padding-left: 20px; color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; }
+    
+    /* Table of Contents */
+    .toc {
+        background: rgba(155, 89, 240, 0.05);
+        border: 1px solid rgba(155, 89, 240, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 30px 0;
+    }
+    .toc strong { display: block; margin-bottom: 15px; font-size: 1.1rem; color: #fff; }
+    .toc ul { list-style: none; padding-left: 0; margin-bottom: 0; }
+    .toc ul li { margin-bottom: 10px; }
+    .toc ul li a { color: #cbd5e1; transition: color 0.2s; }
+    .toc ul li a:hover { color: #00e5ff; }
+  </style>
+</head>
+<body>
+<!-- Header placeholder -->
+<header class="top-bar"><div class="container nav"><a href="/" class="brand" style="color:white; text-decoration:none; font-weight:bold;">Giải Mã Tâm Lý</a></div></header>
+
+<main class="article-container">
+  <article>
+    <h1>${title}</h1>
+    <img src="${imageUrl}" class="cover" alt="${title}" />
+    ${body}
+  </article>
+</main>
+</body>
+</html>`;
+        }
+
+        async function publishToGithub() {
+            const token = getItemSafe('github_token');
+            const owner = getItemSafe('github_owner');
+            const repo = getItemSafe('github_repo');
+            const slug = document.getElementById('review-slug').value;
+            const content = document.getElementById('review-html').value;
+            const title = document.getElementById('review-title').value;
+            const isManualMode = document.getElementById('mode-manual').style.display !== 'none';
+            const category = document.getElementById(isManualMode ? 'manual-category' : 'input-category').value;
+            
+            if(!token || !slug || !content) return alert("Thiếu thông tin API hoặc bài viết!");
+
+            const btn = document.getElementById('btn-publish');
+            btn.innerHTML = '<div class="loader"></div> Đang đẩy lên Website...';
+            btn.disabled = true;
+
+            const path = `${category}/${slug}.html`;
+            const b64 = btoa(unescape(encodeURIComponent(content)));
+            
+            try {
+                // Cập nhật bài viết lên Github
+                await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `AI Publish: ${title}`, content: b64 })
+                });
+                
+                // Tự động ghim bài viết ra ngoài Trang chủ (index.html)
+                btn.innerHTML = '<div class="loader"></div> Đang ghim bài lên Trang chủ...';
+                
+                const indexUrl = `https://api.github.com/repos/${owner}/${repo}/contents/index.html`;
+                const indexRes = await fetch(indexUrl, { headers: { 'Authorization': `Bearer ${token}` }});
+                if(indexRes.ok) {
+                    const indexData = await indexRes.json();
+                    const htmlText = decodeURIComponent(escape(atob(indexData.content)));
+                    
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlText, 'text/html');
+                    
+                    const grid = doc.querySelector('.blog-grid');
+                    if(grid) {
+                        const tagMap = {
+                            'giai-ma-hanh-vi': 'Giải mã hành vi',
+                            'ho-so-bi-an': 'Hồ sơ bí ẩn',
+                            'phat-trien-ban-than': 'Phát triển bản thân',
+                            'hieu-ung-tam-ly': 'Hiệu ứng tâm lý'
+                        };
+                        const tagName = tagMap[category] || 'Tâm lý học';
+                        const desc = document.getElementById('review-desc').value;
+                        
+                        const newCard = doc.createElement('a');
+                        newCard.className = 'blog-card fade-in';
+                        newCard.href = `/${path}`;
+                        newCard.style.textDecoration = 'none';
+                        newCard.innerHTML = `
+        <span class="blog-tag">${tagName}</span>
+        <h3>${title}</h3>
+        <p>${desc.substring(0, 130)}...</p>
+        <span class="read-more">Đọc tiếp →</span>
+      `;
+                        // Thêm vào đầu
+                        grid.insertBefore(newCard, grid.firstChild);
+                        
+                        // Giới hạn hiển thị 6 bài mới nhất
+                        while(grid.children.length > 6) {
+                            grid.removeChild(grid.lastChild);
+                        }
+                        
+                        const newHtmlText = "<!DOCTYPE html>\\n" + doc.documentElement.outerHTML;
+                        const newB64 = btoa(unescape(encodeURIComponent(newHtmlText)));
+                        
+                        const updateRes = await fetch(indexUrl, {
+                            method: 'PUT',
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                message: `AI Update Homepage: Add ${title}`, 
+                                content: newB64,
+                                sha: indexData.sha
+                            })
+                        });
+                        
+                        if (!updateRes.ok) {
+                            const errData = await updateRes.json();
+                            throw new Error("Lỗi cập nhật Trang chủ: " + (errData.message || updateRes.statusText));
+                        }
+                    } else {
+                        throw new Error("Không tìm thấy .blog-grid trong index.html trên Github");
+                    }
+                } else {
+                    throw new Error("Không tải được index.html từ Github. Kiểm tra lại Repo/Token.");
+                }
+                
+                alert("🎉 Đã xuất bản thành công và ghim lên Trang chủ!");
+            } catch (e) {
+                alert("Lỗi: " + e.message);
+            } finally {
+                btn.innerHTML = '<i class="fa-brands fa-github"></i> Duyệt & Đăng lên Website';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
