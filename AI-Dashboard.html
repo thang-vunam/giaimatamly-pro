@@ -698,12 +698,12 @@ Trả về JSON: {"title":"...","slug":"...","metaDescription":"...","htmlConten
         }
 
         function smartKeywordMatch(text, keyword) {
-            const textLower = text.toLowerCase();
-            const kwLower = keyword.toLowerCase();
-            if (textLower.includes(kwLower)) return true;
-            const kwWords = kwLower.split(/[\\s,;:]+/).filter(w => w.length >= 2);
+            const cleanText = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const cleanKw = keyword.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (cleanText.includes(cleanKw)) return true;
+            const kwWords = cleanKw.split(/[\s,;:]+/).filter(w => w.length >= 2);
             if (kwWords.length <= 2) return false;
-            const matchedCount = kwWords.filter(w => textLower.includes(w)).length;
+            const matchedCount = kwWords.filter(w => cleanText.includes(w)).length;
             return matchedCount === kwWords.length;
         }
 
@@ -796,7 +796,7 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
         margin: 30px 0 15px; 
         scroll-margin-top: 80px; 
     }
-    p { margin-bottom: 18px; color: #cbd5e1; font-size: 1.05rem; }
+    p { margin-bottom: 18px; color: #cbd5e1; font-size: 1.05rem; text-align: justify; }
     
     /* Tối ưu Link: Màu Cyan pastel, có gạch dưới nhạt để dễ nhận biết mà không chói */
     a { color: #67e8f9; text-decoration: none; border-bottom: 1px solid rgba(103, 232, 249, 0.3); transition: all 0.2s; }
