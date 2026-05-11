@@ -853,38 +853,50 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
 
             const path = `${category}/${slug}.html`;
             const b64 = btoa(unescape(encodeURIComponent(content)));
+            const tagMap = {
+                'giai-ma-hanh-vi': 'Giải mã hành vi',
+                'ho-so-bi-an': 'Hồ sơ bí ẩn',
+                'phat-trien-ban-than': 'Phát triển bản thân',
+                'hieu-ung-tam-ly': 'Hiệu ứng tâm lý'
+            };
+            const tagName = tagMap[category] || 'Tâm lý học';
+            const desc = document.getElementById('review-desc').value;
             
             try {
-                // Cập nhật bài viết lên Github
-                await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                // 1. Kiểm tra SHA nếu bài đã tồn tại (ghi đè)
+                let fileSha = undefined;
+                const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (checkRes.ok) {
+                    const checkData = await checkRes.json();
+                    fileSha = checkData.sha;
+                }
+
+                const bodyData = { message: `AI Publish: ${title}`, content: b64 };
+                if (fileSha) bodyData.sha = fileSha;
+
+                // 2. Đẩy bài viết lên Github
+                const publishRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
                     method: 'PUT',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `AI Publish: ${title}`, content: b64 })
+                    body: JSON.stringify(bodyData)
                 });
+                if (!publishRes.ok) {
+                    const errData = await publishRes.json().catch(() => ({}));
+                    throw new Error(`Đăng bài thất bại (${publishRes.status}): ${errData.message || ''}`);
+                }
                 
-                // Tự động ghim bài viết ra ngoài Trang chủ (index.html)
+                // 3. Ghim bài viết lên Trang chủ (blog-grid)
                 btn.innerHTML = '<div class="loader"></div> Đang ghim bài lên Trang chủ...';
-                
                 const indexUrl = `https://api.github.com/repos/${owner}/${repo}/contents/index.html`;
                 const indexRes = await fetch(indexUrl, { headers: { 'Authorization': `Bearer ${token}` }});
                 if(indexRes.ok) {
                     const indexData = await indexRes.json();
                     const htmlText = decodeURIComponent(escape(atob(indexData.content)));
-                    
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlText, 'text/html');
-                    
+                    const doc = new DOMParser().parseFromString(htmlText, 'text/html');
                     const grid = doc.querySelector('.blog-grid');
                     if(grid) {
-                        const tagMap = {
-                            'giai-ma-hanh-vi': 'Giải mã hành vi',
-                            'ho-so-bi-an': 'Hồ sơ bí ẩn',
-                            'phat-trien-ban-than': 'Phát triển bản thân',
-                            'hieu-ung-tam-ly': 'Hiệu ứng tâm lý'
-                        };
-                        const tagName = tagMap[category] || 'Tâm lý học';
-                        const desc = document.getElementById('review-desc').value;
-                        
                         const newCard = doc.createElement('a');
                         newCard.className = 'blog-card fade-in';
                         newCard.href = `/${path}`;
@@ -895,39 +907,61 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
         <p>${desc.substring(0, 130)}...</p>
         <span class="read-more">Đọc tiếp →</span>
       `;
-                        // Thêm vào đầu
                         grid.insertBefore(newCard, grid.firstChild);
+                        while(grid.children.length > 6) grid.removeChild(grid.lastChild);
                         
-                        // Giới hạn hiển thị 6 bài mới nhất
-                        while(grid.children.length > 6) {
-                            grid.removeChild(grid.lastChild);
-                        }
-                        
-                        const newHtmlText = "<!DOCTYPE html>\\n" + doc.documentElement.outerHTML;
-                        const newB64 = btoa(unescape(encodeURIComponent(newHtmlText)));
-                        
-                        const updateRes = await fetch(indexUrl, {
+                        const newB64 = btoa(unescape(encodeURIComponent("<!DOCTYPE html>\n" + doc.documentElement.outerHTML)));
+                        await fetch(indexUrl, {
                             method: 'PUT',
                             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                message: `AI Update Homepage: Add ${title}`, 
-                                content: newB64,
-                                sha: indexData.sha
-                            })
+                            body: JSON.stringify({ message: `AI Homepage: Add ${title}`, content: newB64, sha: indexData.sha })
                         });
-                        
-                        if (!updateRes.ok) {
-                            const errData = await updateRes.json();
-                            throw new Error("Lỗi cập nhật Trang chủ: " + (errData.message || updateRes.statusText));
-                        }
-                    } else {
-                        throw new Error("Không tìm thấy .blog-grid trong index.html trên Github");
                     }
+                }
+
+                // 4. Ghim bài viết vào Trang Chuyên Mục (category/index.html)
+                btn.innerHTML = '<div class="loader"></div> Đang cập nhật Trang Chuyên Mục...';
+                const catUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${category}/index.html`;
+                const catRes = await fetch(catUrl, { headers: { 'Authorization': `Bearer ${token}` }});
+                let catSha = undefined;
+                let catDoc;
+                if(catRes.ok) {
+                    const catData = await catRes.json();
+                    catSha = catData.sha;
+                    catDoc = new DOMParser().parseFromString(decodeURIComponent(escape(atob(catData.content))), 'text/html');
                 } else {
-                    throw new Error("Không tải được index.html từ Github. Kiểm tra lại Repo/Token.");
+                    // Tạo mới category page nếu chưa tồn tại
+                    const tpl = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>${tagName} | Giải Mã Tâm Lý</title><link rel="stylesheet" href="../style.css"/><style>body{background:#0a0a1a;color:#f8fafc;font-family:'Inter',sans-serif}.page-header{margin-top:100px;text-align:center;margin-bottom:40px;padding:0 20px}.page-header h1{background:linear-gradient(135deg,#9b59f0,#00e5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.5rem;margin-bottom:15px}.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:30px;max-width:1200px;margin:0 auto;padding:0 20px 60px}.blog-card{background:rgba(20,20,50,0.6);border:1px solid rgba(155,89,240,0.15);border-radius:16px;padding:24px;transition:all 0.3s;display:flex;flex-direction:column;text-decoration:none}.blog-card:hover{transform:translateY(-5px);border-color:rgba(0,229,255,0.4)}.blog-tag{display:inline-block;padding:4px 12px;background:rgba(155,89,240,0.15);color:#d8b4fe;border-radius:20px;font-size:0.85rem;font-weight:600;margin-bottom:15px;width:fit-content}.blog-card h3{color:#fff;font-size:1.3rem;margin-bottom:12px}.blog-card p{color:#cbd5e1;font-size:0.95rem;flex-grow:1;margin-bottom:15px}.read-more{color:#00e5ff;font-weight:600;display:block;margin-top:auto}</style></head><body><header class="top-bar" style="position:fixed;top:0;left:0;width:100%;height:72px;background:rgba(10,10,26,0.85);backdrop-filter:blur(20px);z-index:1000;border-bottom:1px solid rgba(155,89,240,0.15);display:flex;align-items:center;padding:0 24px"><a href="/" style="color:white;text-decoration:none;font-weight:bold;font-size:1.2rem">🧠 Giải Mã Tâm Lý</a></header><main><div class="page-header"><h1>${tagName}</h1></div><div class="blog-grid"></div></main></body></html>`;
+                    catDoc = new DOMParser().parseFromString(tpl, 'text/html');
+                }
+                const catGrid = catDoc.querySelector('.blog-grid');
+                if(catGrid) {
+                    // Xóa empty-state nếu có
+                    const emptyState = catGrid.querySelector('.empty-state');
+                    if(emptyState) emptyState.remove();
+                    
+                    const catCard = catDoc.createElement('a');
+                    catCard.className = 'blog-card';
+                    catCard.href = `/${path}`;
+                    catCard.style.textDecoration = 'none';
+                    catCard.innerHTML = `
+        <span class="blog-tag">${tagName}</span>
+        <h3>${title}</h3>
+        <p>${desc.substring(0, 130)}...</p>
+        <span class="read-more">Đọc tiếp →</span>
+      `;
+                    catGrid.insertBefore(catCard, catGrid.firstChild);
+                    const catB64 = btoa(unescape(encodeURIComponent("<!DOCTYPE html>\n" + catDoc.documentElement.outerHTML)));
+                    const catBody = { message: `AI Category: Add ${title}`, content: catB64 };
+                    if(catSha) catBody.sha = catSha;
+                    await fetch(catUrl, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(catBody)
+                    });
                 }
                 
-                alert("🎉 Đã xuất bản thành công và ghim lên Trang chủ!");
+                alert("🎉 Đã xuất bản thành công!\n✅ Bài viết đã được ghim lên Trang chủ VÀ Trang Chuyên Mục.");
             } catch (e) {
                 alert("Lỗi: " + e.message);
             } finally {
