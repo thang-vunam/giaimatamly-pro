@@ -25,13 +25,25 @@
   </style>
 </head>
 <body>
-  <header class="top-bar" style="position:fixed;top:0;left:0;width:100%;height:72px;background:rgba(10,10,26,0.85);backdrop-filter:blur(20px);z-index:1000;border-bottom:1px solid rgba(155,89,240,0.15);display:flex;align-items:center;padding:0 24px;">
-    <a href="/" style="color:white;text-decoration:none;font-weight:bold;font-size:1.2rem;display:flex;align-items:center;gap:10px;">🧠 Giải Mã Tâm Lý</a>
-    <nav style="margin-left:auto;display:flex;gap:20px;">
-      <a href="/" style="color:#a0a0c0;text-decoration:none;">Trang chủ</a>
-      <a href="/#chu-de" style="color:#a0a0c0;text-decoration:none;">Chủ đề</a>
-      <a href="/#blog" style="color:#a0a0c0;text-decoration:none;">Bài viết</a>
-    </nav>
+  <header class="top-bar" id="header">
+    <div class="container nav">
+      <a href="/" class="brand">
+        <img src="../logo.png" alt="Giải Mã Tâm Lý" class="brand-logo">
+        <div class="brand-text">
+          <span class="brand-title">Giải Mã Tâm Lý</span>
+          <span class="brand-sub">Thấu hiểu hành vi — Làm chủ tâm trí</span>
+        </div>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+      <nav class="nav-links" id="navLinks">
+        <a href="/">Trang chủ</a>
+        <a href="/#videos">Video</a>
+        <a href="/#chu-de" class="active">Chủ đề</a>
+        <a href="/#blog">Bài viết</a>
+        <a href="/#ve-kenh">Về kênh</a>
+        <a href="/#lien-he">Liên hệ</a>
+      </nav>
+    </div>
   </header>
   <main>
     <div class="page-header">
@@ -66,5 +78,10 @@
   <footer style="text-align:center;padding:30px;color:#64748b;font-size:0.9rem;border-top:1px solid rgba(155,89,240,0.1);">
     <p>&copy; 2026 giaimatamly.pro — Giải Mã Tâm Lý.</p>
   </footer>
+  <script>
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classList.toggle('open'); }); }
+  </script>
 </body>
 </html>
