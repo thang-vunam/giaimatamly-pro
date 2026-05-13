@@ -7,36 +7,30 @@
   <meta name="description" content="Khám phá <strong>tâm lý ảnh hưởng</strong> sâu sắc của <strong>mạng xã hội</strong> đến cảm xúc, hành vi của bạn. Nắm vững cơ chế tiềm ẩn để sử dụng nền tảng số một cách chủ động, tích cực và lành mạnh.">
   <link rel="stylesheet" href="../style.css" />
   <style>
-    /* Inline preview style */
+    /* Article page styles */
     body { background: #0a0a1a; color: #f8fafc; font-family: 'Inter', sans-serif; line-height: 1.7; }
-    .article-container { max-width: 800px; margin: 40px auto; padding: 20px; }
-    h1 { color: #fff; font-size: 2rem; margin-bottom: 20px; }
-    
-    /* Tối ưu UX/UI cho Heading: Dùng màu nhạt dịu mắt, tránh dùng Neon 100% gây nhức mắt */
+    .article-container { max-width: 800px; margin: 100px auto 40px; padding: 20px; }
+    article { background: rgba(20,20,50,0.4); padding: 40px; border-radius: 16px; border: 1px solid rgba(155,89,240,0.1); }
+    h1 { color: #fff; font-size: 2rem; margin-bottom: 20px; line-height: 1.3; }
     h2 { 
         color: #e2e8f0; 
         font-size: 1.6rem; 
         margin: 40px 0 20px; 
         padding-bottom: 10px;
         border-bottom: 1px solid rgba(155, 89, 240, 0.2);
-        scroll-margin-top: 80px; 
+        scroll-margin-top: 100px; 
     }
     h3 { 
-        color: #d8b4fe; /* Tím pastel nhẹ, rất dịu */
+        color: #d8b4fe;
         font-size: 1.3rem; 
         margin: 30px 0 15px; 
-        scroll-margin-top: 80px; 
+        scroll-margin-top: 100px; 
     }
     p { margin-bottom: 18px; color: #cbd5e1; font-size: 1.05rem; text-align: justify; }
-    
-    /* Tối ưu Link: Màu Cyan pastel, có gạch dưới nhạt để dễ nhận biết mà không chói */
-    a { color: #67e8f9; text-decoration: none; border-bottom: 1px solid rgba(103, 232, 249, 0.3); transition: all 0.2s; }
-    a:hover { color: #22d3ee; border-bottom-color: #22d3ee; }
-    
+    .article-container a { color: #67e8f9; text-decoration: none; border-bottom: 1px solid rgba(103, 232, 249, 0.3); transition: all 0.2s; }
+    .article-container a:hover { color: #22d3ee; border-bottom-color: #22d3ee; }
     img.cover { width: 100%; border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(155, 89, 240, 0.3); }
     ul, ol { margin-bottom: 18px; padding-left: 20px; color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; }
-    
-    /* Table of Contents */
     .toc {
         background: rgba(155, 89, 240, 0.05);
         border: 1px solid rgba(155, 89, 240, 0.2);
@@ -49,11 +43,35 @@
     .toc ul li { margin-bottom: 10px; }
     .toc ul li a { color: #cbd5e1; transition: color 0.2s; }
     .toc ul li a:hover { color: #00e5ff; }
+    .top-bar a, .nav-links a { border-bottom: none; }
+    @media (max-width: 768px) {
+        article { padding: 20px; }
+        h1 { font-size: 1.6rem; }
+        .article-container { margin-top: 80px; }
+    }
   </style>
 </head>
 <body>
-<!-- Header placeholder -->
-<header class="top-bar"><div class="container nav"><a href="/" class="brand" style="color:white; text-decoration:none; font-weight:bold;">Giải Mã Tâm Lý</a></div></header>
+<header class="top-bar" id="header">
+  <div class="container nav">
+    <a href="/" class="brand">
+      <img src="../logo.png" alt="Giải Mã Tâm Lý" class="brand-logo">
+      <div class="brand-text">
+        <span class="brand-title">Giải Mã Tâm Lý</span>
+        <span class="brand-sub">Thấu hiểu hành vi — Làm chủ tâm trí</span>
+      </div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="/">Trang chủ</a>
+      <a href="/#videos">Video</a>
+      <a href="/#chu-de">Chủ đề</a>
+      <a href="/#blog" class="active">Bài viết</a>
+      <a href="/#ve-kenh">Về kênh</a>
+      <a href="/#lien-he">Liên hệ</a>
+    </nav>
+  </div>
+</header>
 
 <main class="article-container">
   <article>
@@ -111,5 +129,17 @@
 <p>Hãy là người dùng thông thái, nắm vững tâm lý và kiểm soát cuộc chơi trên không gian số. Chúc bạn luôn tìm thấy sự an yên và cân bằng trong thế giới trực tuyến đầy biến động này! Hẹn gặp lại quý vị và các bạn trong những chương trình 'Giải Mã Tâm Lý' tiếp theo.</p>
   </article>
 </main>
+
+<footer class="footer">
+  <div class="container">
+    <p>&copy; 2026 giaimatamly.pro — Giải Mã Tâm Lý. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classList.toggle('open'); }); }
+</script>
 </body>
 </html>
