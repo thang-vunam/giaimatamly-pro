@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="vi"><head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hiệu ứng tâm lý | Giải Mã Tâm Lý</title>
-  <meta name="description" content="Khám phá những hiệu ứng tâm lý nổi tiếng ảnh hưởng đến quyết định và hành vi của chúng ta mỗi ngày.">
-  <link rel="canonical" href="https://giaimatamly.pro/hieu-ung-tam-ly/">
-  <link rel="stylesheet" href="../style.css">
+  <meta name="description" content="Khám phá những hiệu ứng tâm lý nổi tiếng ảnh hưởng đến quyết định và hành vi của chúng ta mỗi ngày." />
+  <link rel="canonical" href="https://giaimatamly.pro/hieu-ung-tam-ly/" />
+  <link rel="stylesheet" href="../style.css" />
   <style>
     body { background: #0a0a1a; color: #f8fafc; font-family: 'Inter', sans-serif; line-height: 1.7; }
     .page-header { margin-top: 100px; text-align: center; margin-bottom: 40px; padding: 0 20px; }
@@ -27,13 +28,25 @@
   </style>
 </head>
 <body>
-  <header class="top-bar" style="position:fixed;top:0;left:0;width:100%;height:72px;background:rgba(10,10,26,0.85);backdrop-filter:blur(20px);z-index:1000;border-bottom:1px solid rgba(155,89,240,0.15);display:flex;align-items:center;padding:0 24px;">
-    <a href="/" style="color:white;text-decoration:none;font-weight:bold;font-size:1.2rem;display:flex;align-items:center;gap:10px;">🧠 Giải Mã Tâm Lý</a>
-    <nav style="margin-left:auto;display:flex;gap:20px;">
-      <a href="/" style="color:#a0a0c0;text-decoration:none;">Trang chủ</a>
-      <a href="/#chu-de" style="color:#a0a0c0;text-decoration:none;">Chủ đề</a>
-      <a href="/#blog" style="color:#a0a0c0;text-decoration:none;">Bài viết</a>
-    </nav>
+  <header class="top-bar" id="header">
+    <div class="container nav">
+      <a href="/" class="brand">
+        <img src="../logo.png" alt="Giải Mã Tâm Lý" class="brand-logo">
+        <div class="brand-text">
+          <span class="brand-title">Giải Mã Tâm Lý</span>
+          <span class="brand-sub">Thấu hiểu hành vi — Làm chủ tâm trí</span>
+        </div>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+      <nav class="nav-links" id="navLinks">
+        <a href="/">Trang chủ</a>
+        <a href="/#videos">Video</a>
+        <a href="/#chu-de" class="active">Chủ đề</a>
+        <a href="/#blog">Bài viết</a>
+        <a href="/#ve-kenh">Về kênh</a>
+        <a href="/#lien-he">Liên hệ</a>
+      </nav>
+    </div>
   </header>
   <main>
     <div class="page-header">
@@ -44,18 +57,20 @@
     <div style="max-width:1200px;margin:0 auto;padding:0 20px 10px;">
       <a href="/" class="back-link">← Quay lại Trang chủ</a>
     </div>
-    <div class="blog-grid"><a class="blog-card" href="/hieu-ung-tam-ly/giai-ma-tam-ly-hoc-toi-pham.html" style="text-decoration: none;">
-        <span class="blog-tag">Hiệu ứng tâm lý</span>
-        <h3>Giải Mã Bóng Tối: Tâm lý học tội phạm và động cơ ẩn giấu</h3>
-        <p>Khám phá thế giới phức tạp của tâm lý học tội phạm, phân tích hành vi và động cơ gây án. Hiểu rõ tâm trí kẻ phạm tội, giải mã bí ẩ...</p>
-        <span class="read-more">Đọc tiếp →</span>
-      </a>
-      
+    <div class="blog-grid">
+      <div class="empty-state">
+        <p>🔜 Chưa có bài viết nào trong chủ đề này. Hãy quay lại sau!</p>
+        <a href="/">← Quay lại Trang chủ</a>
+      </div>
     </div>
   </main>
   <footer style="text-align:center;padding:30px;color:#64748b;font-size:0.9rem;border-top:1px solid rgba(155,89,240,0.1);">
-    <p>© 2026 giaimatamly.pro — Giải Mã Tâm Lý.</p>
+    <p>&copy; 2026 giaimatamly.pro — Giải Mã Tâm Lý.</p>
   </footer>
-
-
-</body></html>
+  <script>
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classList.toggle('open'); }); }
+  </script>
+</body>
+</html>
