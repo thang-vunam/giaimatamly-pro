@@ -63,10 +63,9 @@
     <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
     <nav class="nav-links" id="navLinks">
       <a href="/" class="active">Trang chủ</a>
-      <a href="#videos">Video</a>
       <a href="#chu-de">Chủ đề</a>
       <a href="#blog">Bài viết</a>
-      <a href="#ve-kenh">Về kênh</a>
+      <a href="#videos">Video</a>
       <a href="#lien-he">Liên hệ</a>
     </nav>
   </div>
@@ -74,87 +73,49 @@
 
 <main>
 
-<!-- ================= HERO ================= -->
+<!-- ================= TRANG CHỦ (HERO + ABOUT) ================= -->
 <section id="hero" class="hero">
   <div class="hero-bg">
     <canvas id="neuralCanvas"></canvas>
   </div>
-  <div class="container hero-grid">
+  <div class="container hero-grid" style="grid-template-columns: 1fr auto;">
     <div class="hero-text">
-      <p class="tagline">🧠 Kênh YouTube: Giải Mã Tâm Lý</p>
-      <h1>Thấu hiểu hành vi<br>Làm chủ tâm trí</h1>
+      <p class="tagline">🧠 Giải Mã Tâm Lý — Thấu hiểu hành vi, Làm chủ tâm trí</p>
+      <h1>Chào mừng bạn đến với<br><span class="gradient-text">Giải Mã Tâm Lý</span></h1>
       <p class="hero-desc">
-        Khám phá những bí ẩn đằng sau mỗi hành vi con người — từ hiệu ứng tâm lý,
-        hồ sơ bí ẩn đến kỹ năng phát triển bản thân. Tất cả được giải mã qua video ngắn,
-        dễ hiểu và cuốn hút.
+        Chúng tôi là kênh nội dung chuyên sâu về <strong>tâm lý học ứng dụng</strong>, mang đến cho bạn những góc nhìn mới mẻ về hành vi con người, hiệu ứng tâm lý và kỹ năng phát triển bản thân.
       </p>
+      <p class="hero-desc" style="margin-top: -10px; font-size: 0.95rem; opacity: 0.9;">
+        Việc thấu hiểu tâm lý không chỉ giúp bạn hiểu người khác, mà còn giúp bạn làm chủ chính mình — đưa ra quyết định sáng suốt hơn trong công việc, tình cảm và cuộc sống.
+      </p>
+      
+      <div class="stats-row" style="margin: 30px 0; justify-content: flex-start; gap: 40px;">
+        <div class="stat-item">
+          <div class="stat-number" id="statVideos" style="font-size: 1.8rem;">15+</div>
+          <div class="stat-label">Video</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="statTopics" style="font-size: 1.8rem;">4</div>
+          <div class="stat-label">Chủ đề</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="statSubs" style="font-size: 1.8rem;">3.4K+</div>
+          <div class="stat-label">Followers</div>
+        </div>
+      </div>
+
       <div class="hero-actions">
         <a href="https://www.youtube.com/@giaimatamly.official?sub_confirmation=1" target="_blank" rel="noopener" class="btn btn-primary" id="cta-subscribe">
           ▶ Đăng ký kênh YouTube
         </a>
-        <a href="#videos" class="btn btn-outline" id="cta-watch">
-          🎬 Xem video mới nhất
+        <a href="#chu-de" class="btn btn-outline" id="cta-explore">
+          💡 Khám phá chủ đề
         </a>
       </div>
     </div>
 
-    <div class="hero-card">
-      <h2>🔥 Video nổi bật</h2>
-      <!--
-        ============================================================
-        [HƯỚNG DẪN THAY VIDEO NỔI BẬT]
-        Thay VIDEO_ID bằng ID video YouTube thật.
-        Ví dụ: nếu URL video là youtube.com/watch?v=abc123
-        thì thay tất cả VIDEO_ID bằng abc123
-        ============================================================
-      -->
-      <div class="lite-yt-facade" style="background-image: url('https://i.ytimg.com/vi/Os-uxCY4bHc/hqdefault.jpg');" onclick="this.innerHTML='&lt;iframe src=\'https://www.youtube.com/embed/Os-uxCY4bHc?autoplay=1\' frameborder=\'0\' allow=\'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\' allowfullscreen style=\'width:100%;height:100%;\'&gt;&lt;/iframe&gt;'">
-        <div class="lite-play-btn"></div>
-      </div>
-      <a class="link-yt" href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener">
-        Xem thêm trên YouTube →
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ================= VIDEO SHORTS ================= -->
-<section id="videos" class="section section-alt">
-  <div class="container">
-    <div class="section-header fade-in">
-      <h2>Video <span class="gradient-text">Shorts</span> mới nhất</h2>
-      <p>Những video ngắn gọn, cuốn hút về tâm lý học — giúp bạn hiểu sâu hơn về con người trong vài phút.</p>
-    </div>
-    <div class="shorts-grid">
-      <a class="short-card fade-in" href="https://www.youtube.com/shorts/8zvCWtNdci8" target="_blank" rel="noopener">
-        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/8zvCWtNdci8/oar2.jpg'); background-color: #1a1a2e;"></div>
-        <div class="short-info">
-          <h3>Đêm Giao Thừa: Khoảnh Khắc Não Bạn Bị Lập Trình Lại</h3>
-        </div>
-      </a>
-      <a class="short-card fade-in" href="https://www.youtube.com/shorts/dDM5UkBAPPU" target="_blank" rel="noopener">
-        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/dDM5UkBAPPU/oar2.jpg'); background-color: #1a1a2e;"></div>
-        <div class="short-info">
-          <h3>Bí mật tâm lý giúp con xuất chúng năm 2026</h3>
-        </div>
-      </a>
-      <a class="short-card fade-in" href="https://www.youtube.com/shorts/LI2D2HEawl8" target="_blank" rel="noopener">
-        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/LI2D2HEawl8/oar2.jpg'); background-color: #1a1a2e;"></div>
-        <div class="short-info">
-          <h3>HẬU TRƯỜNG VS TRAILER: Tại sao mạng xã hội đang "lừa" bạn?</h3>
-        </div>
-      </a>
-      <a class="short-card fade-in" href="https://www.youtube.com/shorts/lMpTrzJ-mRU" target="_blank" rel="noopener">
-        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/lMpTrzJ-mRU/oar2.jpg'); background-color: #1a1a2e;"></div>
-        <div class="short-info">
-          <h3>HIỆU ỨNG TIÊU ĐIỂM: Tại sao bạn luôn sợ bị phán xét?</h3>
-        </div>
-      </a>
-    </div>
-    <div style="text-align:center; margin-top:40px;">
-      <a href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener" class="btn btn-outline">
-        Xem tất cả video trên YouTube →
-      </a>
+    <div class="about-visual fade-in" style="display: flex; align-items: center; justify-content: center;">
+      <img src="logo.png" alt="Giải Mã Tâm Lý Logo" class="about-avatar" style="width: 280px; height: 280px; box-shadow: 0 0 50px rgba(155,89,240,0.3);">
     </div>
   </div>
 </section>
@@ -207,7 +168,7 @@
         <h3>Tâm Lý Ảnh Hưởng: Giải Mã Sức Mạnh Mạng Xã Hội Lên Bạn</h3>
         <p>Giải mã Tâm Lý Ảnh Hưởng của mạng xã hội. Hiểu cách chúng định hình cảm xúc, hành vi. Chủ động dùng nền tảng số. Kiểm soát trải ng...</p>
         <span class="read-more">Đọc tiếp →</span>
-      </a><a class="blog-card fade-in" href="/phat-trien-ban-than/giai-ma-gen-thanh-cong-khoa-hoc-tu-duy.html" style="text-decoration: none;">
+      </a><a class="blog-card fade-in" href="/phat-trien-ban-than/giai-ma-gen-thanh-cong-kho-hoc-tu-duy.html" style="text-decoration: none;">
         <span class="blog-tag">Phát triển bản thân</span>
         <h3>Giải Mã Gen Thành Công: Khoa Học Tiết Lộ Cách Tư Duy Thay Đổi Định Mệnh Của Bạn</h3>
         <p>Bí mật đột phá: Giải Mã Mã Gen Thành Công: Khoa Học Tiết Lộ Cách Tư Duy Thay Đổi Định Mệnh Của Bạn. Thay đổi vận mệnh ngay!...</p>
@@ -240,41 +201,54 @@
   </div>
 </section>
 
-<!-- ================= VỀ KÊNH ================= -->
-<section id="ve-kenh" class="section">
-  <div class="container about-grid">
-    <div class="about-content fade-in">
-      <h2>Về kênh <span style="background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Giải Mã Tâm Lý</span></h2>
-      <p>
-        <strong>Giải Mã Tâm Lý</strong> là kênh nội dung chuyên sâu về tâm lý học ứng dụng,
-        mang đến cho bạn những góc nhìn mới mẻ về hành vi con người, hiệu ứng tâm lý
-        và kỹ năng phát triển bản thân.
-      </p>
-      <p>
-        Chúng tôi tin rằng việc thấu hiểu tâm lý không chỉ giúp bạn hiểu người khác,
-        mà còn giúp bạn làm chủ chính mình — đưa ra quyết định sáng suốt hơn
-        trong công việc, tình cảm và cuộc sống.
-      </p>
-      <div class="stats-row">
-        <div class="stat-item">
-          <div class="stat-number" id="statVideos">15+</div>
-          <div class="stat-label">Video</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number" id="statTopics">4</div>
-          <div class="stat-label">Chủ đề</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number" id="statSubs">Đang tăng</div>
-          <div class="stat-label">Subscribers</div>
-        </div>
+<!-- ================= VIDEO (Nổi bật & Shorts) ================= -->
+<section id="videos" class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2>Nội dung <span class="gradient-text">Video</span> mới nhất</h2>
+      <p>Những kiến thức tâm lý học được truyền tải qua định dạng video trực quan, cuốn hút.</p>
+    </div>
+
+    <!-- Video nổi bật to -->
+    <div class="hero-card fade-in" style="max-width: 900px; margin: 0 auto 60px; background: rgba(20,20,50,0.4); border: 1px solid rgba(155,89,240,0.2);">
+      <h3 style="margin-bottom: 20px; text-align: center; color: #fff;">🔥 Video nổi bật</h3>
+      <div class="lite-yt-facade" style="background-image: url('https://i.ytimg.com/vi/Os-uxCY4bHc/hqdefault.jpg'); aspect-ratio: 16/9;" onclick="this.innerHTML='&lt;iframe src=\'https://www.youtube.com/embed/Os-uxCY4bHc?autoplay=1\' frameborder=\'0\' allow=\'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\' allowfullscreen style=\'width:100%;height:100%;\'&gt;&lt;/iframe&gt;'">
+        <div class="lite-play-btn"></div>
       </div>
-      <a href="https://www.youtube.com/@giaimatamly.official?sub_confirmation=1" target="_blank" rel="noopener" class="btn btn-primary" style="animation: none;">
-        ▶ Đăng ký theo dõi ngay
+    </div>
+
+    <!-- Grid Shorts -->
+    <div class="shorts-grid">
+      <a class="short-card fade-in" href="https://www.youtube.com/shorts/8zvCWtNdci8" target="_blank" rel="noopener">
+        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/8zvCWtNdci8/oar2.jpg'); background-color: #1a1a2e;"></div>
+        <div class="short-info">
+          <h3>Đêm Giao Thừa: Khoảnh Khắc Não Bạn Bị Lập Trình Lại</h3>
+        </div>
+      </a>
+      <a class="short-card fade-in" href="https://www.youtube.com/shorts/dDM5UkBAPPU" target="_blank" rel="noopener">
+        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/dDM5UkBAPPU/oar2.jpg'); background-color: #1a1a2e;"></div>
+        <div class="short-info">
+          <h3>Bí mật tâm lý giúp con xuất chúng năm 2026</h3>
+        </div>
+      </a>
+      <a class="short-card fade-in" href="https://www.youtube.com/shorts/LI2D2HEawl8" target="_blank" rel="noopener">
+        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/LI2D2HEawl8/oar2.jpg'); background-color: #1a1a2e;"></div>
+        <div class="short-info">
+          <h3>HẬU TRƯỜNG VS TRAILER: Tại sao mạng xã hội đang "lừa" bạn?</h3>
+        </div>
+      </a>
+      <a class="short-card fade-in" href="https://www.youtube.com/shorts/lMpTrzJ-mRU" target="_blank" rel="noopener">
+        <div class="short-thumb" style="background-image: url('https://i.ytimg.com/vi/lMpTrzJ-mRU/oar2.jpg'); background-color: #1a1a2e;"></div>
+        <div class="short-info">
+          <h3>HIỆU ỨNG TIÊU ĐIỂM: Tại sao bạn luôn sợ bị phán xét?</h3>
+        </div>
       </a>
     </div>
-    <div class="about-visual fade-in">
-      <img src="logo.png" alt="Giải Mã Tâm Lý Logo" class="about-avatar">
+
+    <div style="text-align:center; margin-top:40px;">
+      <a href="https://www.youtube.com/@giaimatamly.official" target="_blank" rel="noopener" class="btn btn-outline">
+        Xem tất cả video trên YouTube →
+      </a>
     </div>
   </div>
 </section>
