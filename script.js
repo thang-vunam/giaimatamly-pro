@@ -4,7 +4,10 @@
    ================================================ */
 
 // ========== YEAR ==========
-document.getElementById('year').textContent = new Date().getFullYear();
+const yearEl = document.getElementById('year');
+if (yearEl) {
+  yearEl.textContent = new Date().getFullYear();
+}
 
 // ========== MOBILE MENU ==========
 const menuToggle = document.getElementById('menuToggle');
@@ -255,4 +258,105 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       window.scrollTo({ top, behavior: 'smooth' });
     }
   });
+});
+
+// ========== LOAD RELATED ARTICLES IN SIDEBAR ==========
+document.addEventListener('DOMContentLoaded', () => {
+  const relatedListContainer = document.getElementById('related-articles-list');
+  if (!relatedListContainer) return;
+
+  // Determine current path and category
+  // Location can be like '/phat-trien-ban-than/ma-hoa-thoi-quen-21-ngay.html'
+  const currentPath = window.location.pathname;
+  const pathParts = currentPath.split('/').filter(p => p);
+  
+  // The category is the second-to-last segment (e.g. 'phat-trien-ban-than')
+  let currentCategory = '';
+  if (pathParts.length >= 2) {
+    currentCategory = pathParts[pathParts.length - 2];
+  } else if (pathParts.length === 1 && !currentPath.endsWith('.html')) {
+    currentCategory = pathParts[0]; // If viewing a category root page like '/phat-trien-ban-than/'
+  }
+
+  // Load articles.json from root
+  // Support both absolute path and local preview (file:// or relative fallback)
+  const articlesJsonUrl = window.location.origin === 'null' || window.location.protocol === 'file:' 
+    ? '../articles.json' 
+    : '/articles.json';
+
+  fetch(articlesJsonUrl)
+    .then(response => {
+      if (!response.ok) throw new Error('Không thể tải danh sách bài viết');
+      return response.json();
+    })
+    .then(articles => {
+      // Normalize URL comparison to avoid slashes mismatch (e.g. relative vs absolute)
+      const cleanUrl = url => url.toLowerCase().replace(/^\/+/g, '').trim();
+      const currentCleanedUrl = cleanUrl(currentPath);
+
+      // 1. Filter articles in same category and exclude current article
+      let related = articles.filter(art => {
+        const isSameCategory = art.category === currentCategory;
+        const isCurrentArticle = cleanUrl(art.url) === currentCleanedUrl;
+        return isSameCategory && !isCurrentArticle;
+      });
+
+      // 2. If same category has fewer than 3 articles, fill in with recent articles from other categories
+      if (related.length < 3) {
+        const otherArticles = articles.filter(art => {
+          const isSameCategory = art.category === currentCategory;
+          const isCurrentArticle = cleanUrl(art.url) === currentCleanedUrl;
+          return !isSameCategory && !isCurrentArticle;
+        });
+        
+        // Take enough from other categories to reach 3 related articles
+        const fillCount = 3 - related.length;
+        related = related.concat(otherArticles.slice(0, fillCount));
+      }
+
+      // Limit to max 4 articles
+      related = related.slice(0, 4);
+
+      // Render to container
+      if (related.length === 0) {
+        relatedListContainer.innerHTML = '<div class="sidebar-empty">Không có bài viết liên quan</div>';
+        return;
+      }
+
+      // Helper to map category slugs to friendly display names
+      const categoryNames = {
+        'phat-trien-ban-than': 'Phát triển bản thân',
+        'giai-ma-hanh-vi': 'Giải mã hành vi',
+        'hieu-ung-tam-ly': 'Hiệu ứng tâm lý',
+        'ho-so-bi-an': 'Hồ sơ bí ẩn'
+      };
+
+      relatedListContainer.innerHTML = related.map(art => {
+        // Adjust link for local preview vs deployed site
+        let linkUrl = art.url;
+        if (window.location.protocol === 'file:') {
+          // If on file:// protocol, adjust relative paths
+          // articles.json links start with '/' (e.g. '/phat-trien-ban-than/x.html')
+          // We convert it to '../phat-trien-ban-than/x.html'
+          linkUrl = '..' + art.url;
+        }
+
+        const catName = categoryNames[art.category] || 'Tâm lý học';
+        
+        return `
+          <a href="${linkUrl}" class="sidebar-item-card">
+            <h4>${art.title}</h4>
+            <div class="sidebar-item-meta">
+              <span>📅 ${art.date}</span>
+              <span>•</span>
+              <span>${catName}</span>
+            </div>
+          </a>
+        `;
+      }).join('');
+    })
+    .catch(error => {
+      console.error('Lỗi tải bài viết liên quan:', error);
+      relatedListContainer.innerHTML = '<div class="sidebar-empty">Không thể tải bài viết liên quan</div>';
+    });
 });
