@@ -433,14 +433,14 @@
             document.getElementById('cfg-gemini').value = getItemSafe('gemini_key') || '';
             document.getElementById('cfg-github').value = getItemSafe('github_token') || '';
             document.getElementById('cfg-owner').value = getItemSafe('github_owner') || 'thang-vunam';
-            document.getElementById('cfg-repo').value = getItemSafe('github_repo') || 'giaimatamly-pro';
+            document.getElementById('cfg-repo').value = 'giaimatamly-pro'; // Cố định để tránh xung đột LocalStorage
         }
 
         function saveSettings() {
             setItemSafe('gemini_key', document.getElementById('cfg-gemini').value);
             setItemSafe('github_token', document.getElementById('cfg-github').value);
             setItemSafe('github_owner', document.getElementById('cfg-owner').value);
-            setItemSafe('github_repo', document.getElementById('cfg-repo').value);
+            // Không lưu github_repo vào LocalStorage để tránh ghi đè chéo giữa các project chạy file://
             updateConnectionStatus();
             closeSettings();
         }
@@ -765,61 +765,32 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
             }
         }
 
-        function buildTemplate(title, desc, category, body, imagePrompt) {
+        function buildTemplate(title, desc, category, body, imagePrompt, dateString) {
             const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt || 'mysterious psychological concept neon cyberpunk')}?width=800&height=400&nologo=true`;
+            
+            // Format current date if not provided
+            let formattedDate = dateString;
+            if (!formattedDate) {
+                const d = new Date();
+                formattedDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+            }
+
+            const categoryNames = {
+                'phat-trien-ban-than': 'Phát triển bản thân',
+                'giai-ma-hanh-vi': 'Giải mã hành vi',
+                'hieu-ung-tam-ly': 'Hiệu ứng tâm lý',
+                'ho-so-bi-an': 'Hồ sơ bí ẩn'
+            };
+            const categoryName = categoryNames[category] || 'Tâm lý học';
+
             return `<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title} | giaimatamly.pro</title>
-  <meta name="description" content="${desc}">
+  <title>\${title} | giaimatamly.pro</title>
+  <meta name="description" content="\${desc}">
   <link rel="stylesheet" href="../style.css" />
-  <style>
-    /* Article page styles */
-    body { background: #0a0a1a; color: #f8fafc; font-family: 'Inter', sans-serif; line-height: 1.7; }
-    .article-container { max-width: 800px; margin: 100px auto 40px; padding: 20px; }
-    article { background: rgba(20,20,50,0.4); padding: 40px; border-radius: 16px; border: 1px solid rgba(155,89,240,0.1); }
-    h1 { color: #fff; font-size: 2rem; margin-bottom: 20px; line-height: 1.3; }
-    h2 { 
-        color: #e2e8f0; 
-        font-size: 1.6rem; 
-        margin: 40px 0 20px; 
-        padding-bottom: 10px;
-        border-bottom: 1px solid rgba(155, 89, 240, 0.2);
-        scroll-margin-top: 100px; 
-    }
-    h3 { 
-        color: #d8b4fe;
-        font-size: 1.3rem; 
-        margin: 30px 0 15px; 
-        scroll-margin-top: 100px; 
-    }
-    p { margin-bottom: 18px; color: #cbd5e1; font-size: 1.05rem; text-align: justify; }
-    .article-container a { color: #67e8f9; text-decoration: none; border-bottom: 1px solid rgba(103, 232, 249, 0.3); transition: all 0.2s; }
-    .article-container a:hover { color: #22d3ee; border-bottom-color: #22d3ee; }
-    img.cover { width: 100%; border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(155, 89, 240, 0.3); }
-    ul, ol { margin-bottom: 18px; padding-left: 20px; color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; }
-    .toc {
-        background: rgba(155, 89, 240, 0.05);
-        border: 1px solid rgba(155, 89, 240, 0.2);
-        border-radius: 12px;
-        padding: 20px;
-        margin: 30px 0;
-    }
-    .toc strong { display: block; margin-bottom: 15px; font-size: 1.1rem; color: #fff; }
-    .toc ul { list-style: none; padding-left: 0; margin-bottom: 0; }
-    .toc ul li { margin-bottom: 10px; }
-    .toc ul li a { color: #cbd5e1; transition: color 0.2s; }
-    .toc ul li a:hover { color: #00e5ff; }
-    /* Nav link overrides for header */
-    .top-bar a, .nav-links a { border-bottom: none; }
-    @media (max-width: 768px) {
-        article { padding: 20px; }
-        h1 { font-size: 1.6rem; }
-        .article-container { margin-top: 80px; }
-    }
-  </style>
 </head>
 <body>
 <!-- Header with full navigation -->
@@ -845,11 +816,26 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
 </header>
 
 <main class="article-container">
-  <article>
-    <h1>${title}</h1>
-    <img src="${imageUrl}" class="cover" alt="${title}" />
-    ${body}
-  </article>
+  <div class="article-layout">
+    <article class="article-main">
+      <h1>\${title}</h1>
+      <div class="article-meta">
+        <span class="meta-item">📅 Đăng ngày: \${formattedDate}</span>
+        <span class="meta-item">📁 Chuyên mục: <a href="/\${category}/">\${categoryName}</a></span>
+      </div>
+      <img src="\${imageUrl}" class="cover" alt="\${title}" />
+      \${body}
+    </article>
+    
+    <aside class="article-sidebar">
+      <div class="sidebar-widget">
+        <h3 class="widget-title">Bài viết cùng chủ đề</h3>
+        <div id="related-articles-list" class="sidebar-list">
+          <div class="sidebar-loading">Đang tải bài viết liên quan...</div>
+        </div>
+      </div>
+    </aside>
+  </div>
 </main>
 
 <footer class="footer">
@@ -858,11 +844,7 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
   </div>
 </footer>
 
-<script>
-const menuToggle = document.getElementById('menuToggle');
-const navLinks = document.getElementById('navLinks');
-if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classList.toggle('open'); }); }
-</script>
+<script src="../script.js" defer></script>
 </body>
 </html>`;
         }
@@ -870,7 +852,7 @@ if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classLis
         async function publishToGithub() {
             const token = getItemSafe('github_token');
             const owner = getItemSafe('github_owner');
-            const repo = getItemSafe('github_repo');
+            const repo = 'giaimatamly-pro'; // Lấy cứng tên repo cho dự án này
             const slug = document.getElementById('review-slug').value;
             const content = document.getElementById('review-html').value;
             const title = document.getElementById('review-title').value;
@@ -894,6 +876,10 @@ if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classLis
             const tagName = tagMap[category] || 'Tâm lý học';
             const desc = document.getElementById('review-desc').value;
             
+            // Lấy thời gian đăng bài hiện tại dưới định dạng DD/MM/YYYY
+            const d = new Date();
+            const dateString = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+
             try {
                 // 1. Kiểm tra SHA nếu bài đã tồn tại (ghi đè)
                 let fileSha = undefined;
@@ -935,6 +921,9 @@ if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classLis
                         newCard.style.textDecoration = 'none';
                         newCard.innerHTML = `
         <span class="blog-tag">${tagName}</span>
+        <div class="blog-card-meta">
+          <span class="blog-card-date">📅 ${dateString}</span>
+        </div>
         <h3>${title}</h3>
         <p>${desc.substring(0, 130)}...</p>
         <span class="read-more">Đọc tiếp →</span>
@@ -978,6 +967,9 @@ if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classLis
                     catCard.style.textDecoration = 'none';
                     catCard.innerHTML = `
         <span class="blog-tag">${tagName}</span>
+        <div class="blog-card-meta">
+          <span class="blog-card-date">📅 ${dateString}</span>
+        </div>
         <h3>${title}</h3>
         <p>${desc.substring(0, 130)}...</p>
         <span class="read-more">Đọc tiếp →</span>
@@ -993,7 +985,50 @@ if (menuToggle) { menuToggle.addEventListener('click', () => { navLinks.classLis
                     });
                 }
                 
-                alert("🎉 Đã xuất bản thành công!\n✅ Bài viết đã được ghim lên Trang chủ VÀ Trang Chuyên Mục.");
+                // 5. Cập nhật articles.json
+                btn.innerHTML = '<div class="loader"></div> Đang cập nhật metadata bài viết...';
+                const metaUrl = `https://api.github.com/repos/${owner}/${repo}/contents/articles.json`;
+                const metaRes = await fetch(metaUrl, { headers: { 'Authorization': `Bearer ${token}` }});
+                let metaSha = undefined;
+                let articlesList = [];
+                if(metaRes.ok) {
+                    const metaData = await metaRes.json();
+                    metaSha = metaData.sha;
+                    try {
+                        articlesList = JSON.parse(decodeURIComponent(escape(atob(metaData.content))));
+                    } catch(e) {
+                        console.error("Lỗi parse articles.json:", e);
+                        articlesList = [];
+                    }
+                }
+                
+                // Tránh trùng lặp nếu publish lại cùng một bài viết (slug giống nhau)
+                const articleUrl = `/${path}`;
+                articlesList = articlesList.filter(item => item.url !== articleUrl);
+                
+                const newArticleMeta = {
+                    title: title,
+                    url: articleUrl,
+                    category: category,
+                    date: dateString,
+                    desc: desc
+                };
+                articlesList.unshift(newArticleMeta);
+                
+                const metaB64 = btoa(unescape(encodeURIComponent(JSON.stringify(articlesList, null, 2))));
+                const metaBody = { message: `AI Meta: Add ${title}`, content: metaB64 };
+                if(metaSha) metaBody.sha = metaSha;
+                
+                const metaUpdateRes = await fetch(metaUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(metaBody)
+                });
+                if(!metaUpdateRes.ok) {
+                    console.error("Không thể cập nhật articles.json");
+                }
+
+                alert("🎉 Đã xuất bản thành công!\n✅ Bài viết đã được đăng, ghim lên Trang chủ & Trang Chuyên Mục, và cập nhật articles.json.");
             } catch (e) {
                 alert("Lỗi: " + e.message);
             } finally {
