@@ -788,8 +788,8 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>\${title} | giaimatamly.pro</title>
-  <meta name="description" content="\${desc}">
+  <title>${title} | giaimatamly.pro</title>
+  <meta name="description" content="${desc}">
   <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
@@ -818,13 +818,13 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
 <main class="article-container">
   <div class="article-layout">
     <article class="article-main">
-      <h1>\${title}</h1>
+      <h1>${title}</h1>
       <div class="article-meta">
-        <span class="meta-item">📅 Đăng ngày: \${formattedDate}</span>
-        <span class="meta-item">📁 Chuyên mục: <a href="/\${category}/">\${categoryName}</a></span>
+        <span class="meta-item">📅 Đăng ngày: ${formattedDate}</span>
+        <span class="meta-item">📁 Chuyên mục: <a href="/${category}/">${categoryName}</a></span>
       </div>
-      <img src="\${imageUrl}" class="cover" alt="\${title}" />
-      \${body}
+      <img src="${imageUrl}" class="cover" alt="${title}" />
+      ${body}
     </article>
     
     <aside class="article-sidebar">
