@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 BASE_URL = "https://giaimatamly.pro"
-DIRECTORY = r"C:\Users\thangvu\.gemini\antigravity\scratch\giaimatamly-pro"
+DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 # Find all HTML files
 html_files = []
