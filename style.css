@@ -874,26 +874,28 @@ main { padding-top: var(--header-h); }
 
 /* Cover image styling & Caption */
 .article-main .article-cover-figure {
-  margin: 0 0 35px 0;
+  margin: 0 0 45px 0; /* Khoảng cách lớn với nội dung bài viết bên dưới */
   width: 100%;
+  display: block;
 }
 
 .article-main .article-cover-figure img.cover {
   width: 100%;
   height: auto;
   border-radius: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 8px; /* Sát với hình hơn */
   border: 1px solid rgba(155, 89, 240, 0.3);
   display: block;
 }
 
 .article-main figcaption.article-cover-caption {
-  font-size: 0.92rem;
-  color: #a0a0c0;
-  line-height: 1.6;
-  font-style: italic;
-  text-align: justify;
+  font-size: 0.86rem; /* Chữ nhỏ gọn hơn */
+  color: #8e9bb0 !important; /* Màu xám xanh trầm mịn màng */
+  line-height: 1.5;
+  font-style: italic !important; /* Đảm bảo luôn in nghiêng */
+  text-align: justify; /* Căn lề đều hai bên */
   padding: 0 5px;
+  margin: 0;
 }
 
 /* Headings in article content */
