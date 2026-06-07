@@ -9,26 +9,21 @@ import time
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 CATEGORIES = ['giai-ma-hanh-vi', 'hieu-ung-tam-ly', 'ho-so-bi-an', 'phat-trien-ban-than']
 
-print(f"Starting Unsplash NAPI repair script in: {PROJECT_DIR}")
+# Quality English keywords for search queries, matching article topics
+KEYWORDS_MAPPING = {
+    "bi-an-ngon-ngu-co-the-giai-ma-suy-nghi-that-tam-ly-hoc": "body language communication",
+    "giai-ma-hanh-vi-su-dung-ma-tuy": "addiction recovery support",
+    "giai-ma-tam-ly-hoc-toi-pham": "detective criminal psychology",
+    "7-cau-hoi-rung-ron-fbi-thien-tai-phan-tich-toi-pham": "fbi investigation mystery",
+    "nguoi-thong-minh-sap-bay-ai-giai-ma-bay-tam-ly-thoi-dai-so": "artificial intelligence robot",
+    "don-rac-trong-nao-lay-lai-ky-luat": "mindfulness meditation mental focus",
+    "giai-ma-gen-thanh-cong-kho-hoc-tu-duy": "success career growth",
+    "giai-ma-gen-thanh-cong-khoa-hoc-tu-duy": "brain achievement success",
+    "ma-hoa-thoi-quen-21-ngay": "habit routine calendar planning",
+    "tam-ly-anh-huong-giai-ma-mang-xa-hoi": "smartphone social media addiction"
+}
 
-def extract_keywords_from_url(url):
-    try:
-        parsed = urllib.parse.urlparse(url)
-        path = parsed.path
-        prompt_encoded = path.replace('/prompt/', '')
-        prompt = urllib.parse.unquote(prompt_encoded)
-        
-        words = re.findall(r'[a-zA-Z]+', prompt)
-        filtered_words = [w.lower() for w in words if len(w) > 2 and w.lower() not in ['and', 'the', 'for', 'with']]
-        
-        keywords = filtered_words[:3]
-        if not keywords:
-            keywords = ['psychology']
-            
-        return " ".join(keywords)
-    except Exception as e:
-        print(f"Error parsing prompt: {e}")
-        return "psychology"
+print(f"Starting Unsplash NAPI repair script in: {PROJECT_DIR}")
 
 def get_unsplash_image_url(query):
     print(f"Searching Unsplash for: '{query}'")
@@ -87,22 +82,14 @@ def process_html_file(file_path, category, filename):
         return False
 
     original_src = match.group(2)
+    base_name = os.path.splitext(filename)[0]
     
-    if 'pollinations.ai' not in original_src and 'loremflickr' not in original_src and not original_src.endswith('-cover.jpg'):
-        print(f"Skipping: {filename} (Image is already custom: {original_src})")
-        return False
-
+    # Always process to replace bad images with new mapped ones
     print(f"\nProcessing article: {filename}")
     
-    if 'pollinations.ai' in original_src:
-        query = extract_keywords_from_url(original_src)
-    else:
-        base_name = os.path.splitext(filename)[0]
-        words = base_name.split('-')
-        query = " ".join([w for w in words if len(w) > 3][:3])
-        if not query:
-            query = "psychology"
-
+    # Get high quality English query from mapping
+    query = KEYWORDS_MAPPING.get(base_name, "psychology")
+    
     unsplash_url = get_unsplash_image_url(query)
     if not unsplash_url:
         unsplash_url = get_unsplash_image_url("psychology")
@@ -110,7 +97,6 @@ def process_html_file(file_path, category, filename):
             print("Failed to get Unsplash image.")
             return False
 
-    base_name = os.path.splitext(filename)[0]
     local_image_filename = f"{base_name}-cover.jpg"
     local_image_path = os.path.join(PROJECT_DIR, category, local_image_filename)
 
