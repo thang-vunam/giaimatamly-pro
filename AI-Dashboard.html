@@ -1120,8 +1120,10 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
       <div class="article-meta">
         <span class="meta-item">📅 Đăng ngày: ${formattedDate}</span>
         <span class="meta-item">📁 Chuyên mục: <a href="/${category}/">${categoryName}</a></span>
-      </div>
-      <img src="${imageUrl}" class="cover" alt="${title}" />
+      <figure class="article-cover-figure">
+        <img src="${imageUrl}" class="cover" alt="${title}" />
+        <figcaption class="article-cover-caption">${desc}</figcaption>
+      </figure>
       ${body}
     </article>
     
