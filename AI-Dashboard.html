@@ -602,6 +602,19 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
             finally { btn.innerHTML = '<i class="fa-solid fa-fire"></i> Gợi ý Chủ đề Trending'; }
         }
 
+        function cleanHtmlContent(html) {
+            if (!html) return html;
+            let cleaned = html;
+            // Remove empty paragraphs
+            cleaned = cleaned.replace(/<p>\s*(?:&nbsp;|\s)*\s*<\/p>/g, '');
+            // Reduce multiple consecutive br tags to at most one br
+            cleaned = cleaned.replace(/(?:<br\s*\/?>\s*){2,}/g, '<br />');
+            // Remove br tags immediately adjacent to heading tags
+            cleaned = cleaned.replace(/<br\s*\/?>\s*(<h[23456])/g, '$1');
+            cleaned = cleaned.replace(/(<\/h[23456]>)\s*<br\s*\/?>/g, '$1');
+            return cleaned;
+        }
+
         function switchPreviewTab(tab) {
             const tabs = document.querySelectorAll('.tab-btn');
             tabs.forEach(t => t.classList.remove('active'));
@@ -611,7 +624,10 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                 document.getElementById('code-pane').style.display = 'none';
                 const html = document.getElementById('review-html').value;
                 const iframe = document.getElementById('preview-iframe');
-                if(html) iframe.srcdoc = html.replace('<head>', '<head><base href="https://giaimatamly.pro/">');
+                if(html) {
+                    const cleanHtml = cleanHtmlContent(html);
+                    iframe.srcdoc = cleanHtml.replace('<head>', '<head><base href="https://giaimatamly.pro/">');
+                }
             } else {
                 tabs[1].classList.add('active');
                 document.getElementById('preview-pane').style.display = 'none';
@@ -644,35 +660,43 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
             const container = document.getElementById('unsplash-gallery-container');
             const gallery = document.getElementById('unsplash-gallery');
             
-            if (!unsplashKey) {
-                alert("Chưa cấu hình Unsplash Access Key. Vui lòng bấm vào 'Cấu hình API' để nhập Key trước khi tìm ảnh.");
-                return;
-            }
-
             container.style.display = 'block';
             gallery.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: var(--text-muted);"><div class="loader" style="margin: 0 auto 10px;"></div> Đang tìm kiếm ảnh trên Unsplash...</div>';
 
             try {
-                const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=8&orientation=landscape`;
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Client-ID ${unsplashKey}`
+                let data = null;
+                if (unsplashKey) {
+                    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&orientation=landscape`;
+                    const response = await fetch(url, {
+                        headers: {
+                            'Authorization': `Client-ID ${unsplashKey}`
+                        }
+                    });
+                    if (response.ok) {
+                        data = await response.json();
                     }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                // Fallback to keyless NAPI with CORS proxy
+                if (!data) {
+                    const unsplashUrl = `https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(unsplashUrl)}`;
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        const rawData = await response.json();
+                        const filteredResults = (rawData.results || []).filter(photo => !(photo.premium || photo.plus));
+                        data = { results: filteredResults };
+                    }
                 }
 
-                const data = await response.json();
-                unsplashPhotosData = data.results || [];
-                
-                if (unsplashPhotosData.length === 0) {
-                    gallery.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: var(--text-muted);">Không tìm thấy hình ảnh nào phù hợp. Thử từ khóa khác xem sao.</div>';
+                if (!data || !data.results || data.results.length === 0) {
+                    gallery.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: var(--text-muted);">Không tìm thấy hình ảnh phù hợp trên Unsplash.</div>';
                     return;
                 }
 
+                unsplashPhotosData = data.results || [];
                 gallery.innerHTML = '';
+                
                 unsplashPhotosData.forEach((photo, idx) => {
                     const thumbUrl = photo.urls.small || photo.urls.thumb;
                     const author = photo.user ? photo.user.name : 'Unknown';
@@ -689,7 +713,7 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
 
             } catch (e) {
                 console.error("Lỗi tìm kiếm Unsplash:", e);
-                gallery.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #f87171;">Lỗi tìm kiếm Unsplash: ${e.message}. Vui lòng kiểm tra lại Access Key hoặc kết nối mạng.</div>`;
+                gallery.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #f87171;">Lỗi tìm kiếm Unsplash: ${e.message}. Vui lòng thử từ khóa khác hoặc kiểm tra mạng.</div>`;
             }
         }
 
@@ -756,30 +780,51 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
             
             const iframe = document.getElementById('preview-iframe');
             if (iframe && iframe.srcdoc) {
-                iframe.srcdoc = htmlContent.replace('<head>', '<head><base href="https://giaimatamly.pro/">');
+                const cleanHtml = cleanHtmlContent(htmlContent);
+                iframe.srcdoc = cleanHtml.replace('<head>', '<head><base href="https://giaimatamly.pro/">');
             }
         }
 
         async function autoSearchAndApplyUnsplash(query) {
             const unsplashKey = getItemSafe('unsplash_key');
-            if (!unsplashKey) return false;
             
             try {
-                const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=8&orientation=landscape`;
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Client-ID ${unsplashKey}`
-                    }
-                });
-
-                if (!response.ok) return false;
-
-                const data = await response.json();
-                unsplashPhotosData = data.results || [];
+                let imageUrl = null;
+                let results = [];
                 
-                if (unsplashPhotosData.length > 0) {
-                    const photo = unsplashPhotosData[0];
-                    const imageUrl = photo.urls.regular;
+                if (unsplashKey) {
+                    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&orientation=landscape`;
+                    const response = await fetch(url, {
+                        headers: {
+                            'Authorization': `Client-ID ${unsplashKey}`
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        results = data.results || [];
+                        if (results.length > 0) {
+                            imageUrl = results[0].urls.regular;
+                        }
+                    }
+                }
+                
+                // Fallback to keyless NAPI with CORS proxy
+                if (!imageUrl) {
+                    const unsplashUrl = `https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(unsplashUrl)}`;
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        const rawData = await response.json();
+                        results = (rawData.results || []).filter(photo => !(photo.premium || photo.plus));
+                        if (results.length > 0) {
+                            imageUrl = results[0].urls.regular;
+                        }
+                    }
+                }
+
+                unsplashPhotosData = results;
+                
+                if (imageUrl) {
                     document.getElementById('review-image-url').value = imageUrl;
                     
                     const gallery = document.getElementById('unsplash-gallery');
@@ -802,11 +847,15 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
 
                     updateCoverImageInHtml(imageUrl);
 
-                    fetch(photo.links.download_location, {
-                        headers: {
-                            'Authorization': `Client-ID ${unsplashKey}`
-                        }
-                    });
+                    if (unsplashKey && results[0] && results[0].links && results[0].links.download_location) {
+                        try {
+                            fetch(results[0].links.download_location, {
+                                headers: {
+                                    'Authorization': `Client-ID ${unsplashKey}`
+                                }
+                            });
+                        } catch(e) {}
+                    }
 
                     return true;
                 }
@@ -854,7 +903,7 @@ Trả về JSON CHÍNH XÁC:
                 
                 const fallbackImgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt || 'mysterious psychological concept neon cyberpunk')}?width=800&height=400&nologo=true`;
                 document.getElementById('review-image-url').value = fallbackImgUrl;
-                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, data.htmlContent, data.imagePrompt);
+                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, cleanHtmlContent(data.htmlContent), data.imagePrompt);
                 
                 document.getElementById('unsplash-gallery-container').style.display = 'none';
                 
@@ -863,9 +912,7 @@ Trả về JSON CHÍNH XÁC:
                 switchPreviewTab('preview');
                 document.getElementById('step-3').scrollIntoView({ behavior: 'smooth' });
 
-                if (getItemSafe('unsplash_key')) {
-                    await autoSearchAndApplyUnsplash(data.imagePrompt || topic);
-                }
+                await autoSearchAndApplyUnsplash(data.imagePrompt || topic);
             } catch(e) { alert("Lỗi: " + e.message); } 
             finally { btn.innerHTML = '<span><i class="fa-solid fa-microchip"></i> Viết bản nháp chuyên sâu (~15s)</span>'; btn.disabled = false; }
         }
@@ -908,7 +955,7 @@ Trả về JSON: {"title":"...","slug":"...","metaDescription":"...","htmlConten
                 
                 const fallbackImgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt || 'mysterious psychological concept neon cyberpunk')}?width=800&height=400&nologo=true`;
                 document.getElementById('review-image-url').value = fallbackImgUrl;
-                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, data.htmlContent, data.imagePrompt);
+                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, cleanHtmlContent(data.htmlContent), data.imagePrompt);
                 
                 document.getElementById('unsplash-gallery-container').style.display = 'none';
                 
@@ -916,9 +963,7 @@ Trả về JSON: {"title":"...","slug":"...","metaDescription":"...","htmlConten
                 document.getElementById('step-3').classList.remove('hidden');
                 switchPreviewTab('preview');
 
-                if (getItemSafe('unsplash_key')) {
-                    await autoSearchAndApplyUnsplash(data.imagePrompt || topic);
-                }
+                await autoSearchAndApplyUnsplash(data.imagePrompt || topic);
             } catch(e) { alert("Lỗi: " + e.message); } 
             finally { btn.innerHTML = '<span><i class="fa-solid fa-magnifying-glass-chart"></i> AI Tối ưu SEO & Chuẩn bị đăng</span>'; btn.disabled = false; }
         }
