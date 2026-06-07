@@ -679,8 +679,7 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                 
                 // Fallback to keyless NAPI with CORS proxy
                 if (!data) {
-                    const unsplashUrl = `https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(unsplashUrl)}`;
+                    const proxyUrl = `https://corsproxy.io/?https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
                     const response = await fetch(proxyUrl);
                     if (response.ok) {
                         const rawData = await response.json();
@@ -810,8 +809,7 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                 
                 // Fallback to keyless NAPI with CORS proxy
                 if (!imageUrl) {
-                    const unsplashUrl = `https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(unsplashUrl)}`;
+                    const proxyUrl = `https://corsproxy.io/?https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
                     const response = await fetch(proxyUrl);
                     if (response.ok) {
                         const rawData = await response.json();
