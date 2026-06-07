@@ -872,13 +872,28 @@ main { padding-top: var(--header-h); }
   border-bottom-color: var(--accent-cyan);
 }
 
-/* Cover image styling */
-.article-main img.cover {
+/* Cover image styling & Caption */
+.article-main .article-cover-figure {
+  margin: 0 0 35px 0;
+  width: 100%;
+}
+
+.article-main .article-cover-figure img.cover {
   width: 100%;
   height: auto;
   border-radius: 12px;
-  margin-bottom: 30px;
+  margin-bottom: 12px;
   border: 1px solid rgba(155, 89, 240, 0.3);
+  display: block;
+}
+
+.article-main figcaption.article-cover-caption {
+  font-size: 0.92rem;
+  color: #a0a0c0;
+  line-height: 1.6;
+  font-style: italic;
+  text-align: justify;
+  padding: 0 5px;
 }
 
 /* Headings in article content */
