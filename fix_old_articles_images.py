@@ -1,19 +1,15 @@
 import os
 import re
 import urllib.parse
-import urllib.request
+import json
+import subprocess
 import time
 
 # Directory containing the project
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 CATEGORIES = ['giai-ma-hanh-vi', 'hieu-ung-tam-ly', 'ho-so-bi-an', 'phat-trien-ban-than']
 
-print(f"Starting LoremFlickr repair script in: {PROJECT_DIR}")
-
-# Headers to pretend to be a browser
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-}
+print(f"Starting Unsplash NAPI repair script in: {PROJECT_DIR}")
 
 def extract_keywords_from_url(url):
     try:
@@ -29,23 +25,45 @@ def extract_keywords_from_url(url):
         if not keywords:
             keywords = ['psychology']
             
-        return ",".join(keywords)
+        return " ".join(keywords)
     except Exception as e:
         print(f"Error parsing prompt: {e}")
         return "psychology"
 
-def download_image(url, save_path):
-    print(f"Downloading: {url} -> {save_path}")
+def get_unsplash_image_url(query):
+    print(f"Searching Unsplash for: '{query}'")
     try:
-        req = urllib.request.Request(url, headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=30) as response:
-            with open(save_path, 'wb') as f:
-                f.write(response.read())
-        print("Download successful!")
-        return True
+        encoded_query = urllib.parse.quote(query)
+        api_url = f"https://unsplash.com/napi/search/photos?query={encoded_query}&per_page=5"
+        
+        res = subprocess.run(['curl.exe', '-s', api_url], capture_output=True, text=True, encoding='utf-8')
+        if res.returncode != 0:
+            print(f"Curl search failed: {res.stderr}")
+            return None
+            
+        data = json.loads(res.stdout)
+        results = data.get('results', [])
+        if results:
+            photo_url = results[0].get('urls', {}).get('regular')
+            if photo_url:
+                print(f"Found Unsplash image ID: {results[0].get('id')}")
+                return photo_url
+        print("No results found on Unsplash NAPI.")
     except Exception as e:
-        print(f"Failed to download: {e}")
-        return False
+        print(f"Error calling Unsplash NAPI: {e}")
+    return None
+
+def download_image(url, save_path):
+    print(f"Downloading Unsplash image: {url} -> {save_path}")
+    try:
+        res = subprocess.run(['curl.exe', '-s', '-o', save_path, url], capture_output=True)
+        if res.returncode == 0 and os.path.exists(save_path) and os.path.getsize(save_path) > 1000:
+            print("Download successful!")
+            return True
+        print(f"Failed to download. Exit code: {res.returncode}, size: {os.path.getsize(save_path) if os.path.exists(save_path) else 'N/A'}")
+    except Exception as e:
+        print(f"Failed to download image: {e}")
+    return False
 
 def process_html_file(file_path, category, filename):
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -67,22 +85,33 @@ def process_html_file(file_path, category, filename):
 
     original_src = match.group(2)
     
-    if 'pollinations.ai' not in original_src:
-        print(f"Skipping: {filename} (Image is already not on pollinations: {original_src})")
+    if 'pollinations.ai' not in original_src and 'loremflickr' not in original_src and not original_src.endswith('-cover.jpg'):
+        print(f"Skipping: {filename} (Image is already custom: {original_src})")
         return False
 
     print(f"\nProcessing article: {filename}")
     
-    keywords = extract_keywords_from_url(original_src)
-    print(f"Extracted keywords for search: {keywords}")
-    
-    lorem_flickr_url = f"https://loremflickr.com/800/400/{keywords}"
-    
+    if 'pollinations.ai' in original_src:
+        query = extract_keywords_from_url(original_src)
+    else:
+        base_name = os.path.splitext(filename)[0]
+        words = base_name.split('-')
+        query = " ".join([w for w in words if len(w) > 3][:3])
+        if not query:
+            query = "psychology"
+
+    unsplash_url = get_unsplash_image_url(query)
+    if not unsplash_url:
+        unsplash_url = get_unsplash_image_url("psychology")
+        if not unsplash_url:
+            print("Failed to get Unsplash image.")
+            return False
+
     base_name = os.path.splitext(filename)[0]
     local_image_filename = f"{base_name}-cover.jpg"
     local_image_path = os.path.join(PROJECT_DIR, category, local_image_filename)
 
-    success = download_image(lorem_flickr_url, local_image_path)
+    success = download_image(unsplash_url, local_image_path)
     if not success:
         return False
 
