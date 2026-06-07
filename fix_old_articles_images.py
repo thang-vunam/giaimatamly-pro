@@ -34,7 +34,7 @@ def get_unsplash_image_url(query):
     print(f"Searching Unsplash for: '{query}'")
     try:
         encoded_query = urllib.parse.quote(query)
-        api_url = f"https://unsplash.com/napi/search/photos?query={encoded_query}&per_page=5"
+        api_url = f"https://unsplash.com/napi/search/photos?query={encoded_query}&per_page=20"
         
         res = subprocess.run(['curl.exe', '-s', api_url], capture_output=True, text=True, encoding='utf-8')
         if res.returncode != 0:
@@ -43,12 +43,15 @@ def get_unsplash_image_url(query):
             
         data = json.loads(res.stdout)
         results = data.get('results', [])
-        if results:
-            photo_url = results[0].get('urls', {}).get('regular')
-            if photo_url:
-                print(f"Found Unsplash image ID: {results[0].get('id')}")
-                return photo_url
-        print("No results found on Unsplash NAPI.")
+        for photo in results:
+            # Check if it is a premium/plus photo to avoid watermarks
+            is_premium = photo.get('premium', False) or photo.get('plus', False)
+            if not is_premium:
+                photo_url = photo.get('urls', {}).get('regular')
+                if photo_url:
+                    print(f"Found free Unsplash image ID: {photo.get('id')}")
+                    return photo_url
+        print("No free results found on Unsplash NAPI.")
     except Exception as e:
         print(f"Error calling Unsplash NAPI: {e}")
     return None
