@@ -640,6 +640,68 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
         // ----------------------------------------------------
         let unsplashPhotosData = []; // Store current search results
 
+        function cleanQueryForLoremFlickr(query) {
+            if (!query) return 'psychology';
+            let clean = query.replace(/['"“”()\[\]{}.,\/#!$%\^&\*;:{}=\-_`~?]/g, ' ');
+            function removeDiacritics(str) {
+                const map = {
+                    'a': 'áàảãạăắằẳẵặâấầẩẫậ',
+                    'A': 'ÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬ',
+                    'd': 'đ',
+                    'D': 'Đ',
+                    'e': 'éèẻẽẹêếềểễệ',
+                    'E': 'ÉÈẺẼẸÊẾỀỂỄỆ',
+                    'i': 'íìỉĩị',
+                    'I': 'ÍÌỈĨỊ',
+                    'o': 'óòỏõọôốồổỗộơớờởỡợ',
+                    'O': 'ÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ',
+                    'u': 'úùủũụưứừửữự',
+                    'U': 'ÚÙỦŨỤƯỨỪỬỮỰ',
+                    'y': 'ýỳỷỹỵ',
+                    'Y': 'ÝỲỶỸỴ'
+                };
+                let res = str;
+                for (const [ascii, nonAscii] of Object.entries(map)) {
+                    for (const char of nonAscii) {
+                        res = res.replaceAll(char, ascii);
+                    }
+                }
+                return res;
+            }
+            const unsignedQuery = removeDiacritics(clean).toLowerCase();
+            const dict = {
+                'tam ly': 'psychology',
+                'hanh vi': 'behavior',
+                'bi an': 'mystery',
+                'toi pham': 'crime',
+                'ao giac': 'illusion',
+                'phat trien': 'growth',
+                'dang so': 'scary',
+                'doc vi': 'mind-control',
+                'dieu khien': 'manipulation',
+                'nguoi khac': 'people',
+                'noi so': 'fear',
+                'cam xuc': 'emotion',
+                'tu duy': 'mindset',
+                'thanh cong': 'success',
+                'thoi quen': 'habit'
+            };
+            let matchedEn = [];
+            for (const [vn, en] of Object.entries(dict)) {
+                if (unsignedQuery.includes(vn)) {
+                    matchedEn.push(en);
+                }
+            }
+            if (matchedEn.length > 0) {
+                return matchedEn.slice(0, 2).join(',');
+            }
+            let tags = unsignedQuery.trim().split(/\s+/).filter(t => t.length > 2);
+            const fillers = ['and', 'the', 'for', 'with', 'hieu', 'ung', 'tam', 'ly', 'viet', 'nam', 'qua', 'cho', 'cua', 'trong', 'hinh', 'bai', 'viet'];
+            tags = tags.filter(t => !fillers.includes(t) && isNaN(t));
+            if (tags.length === 0) return 'psychology';
+            return tags.slice(0, 2).join(',');
+        }
+
         function closeUnsplashGallery() {
             document.getElementById('unsplash-gallery-container').style.display = 'none';
         }
@@ -697,8 +759,9 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                     console.log("Using LoremFlickr fallback for search...");
                     const numImages = 8;
                     const promises = [];
+                    const cleanFlickrQuery = cleanQueryForLoremFlickr(query);
                     for (let i = 0; i < numImages; i++) {
-                        const flickrUrl = `https://loremflickr.com/800/400/${encodeURIComponent(query)}?random=${i}`;
+                        const flickrUrl = `https://loremflickr.com/800/400/${encodeURIComponent(cleanFlickrQuery)}?random=${i}`;
                         promises.push(
                             fetch(flickrUrl)
                                 .then(res => {
@@ -866,8 +929,9 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                     console.log("Using LoremFlickr fallback for auto-search...");
                     const numImages = 8;
                     const promises = [];
+                    const cleanFlickrQuery = cleanQueryForLoremFlickr(query);
                     for (let i = 0; i < numImages; i++) {
-                        const flickrUrl = `https://loremflickr.com/800/400/${encodeURIComponent(query)}?random=${i}`;
+                        const flickrUrl = `https://loremflickr.com/800/400/${encodeURIComponent(cleanFlickrQuery)}?random=${i}`;
                         promises.push(
                             fetch(flickrUrl)
                                 .then(res => {
