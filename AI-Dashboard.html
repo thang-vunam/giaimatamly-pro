@@ -641,16 +641,43 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
         let unsplashPhotosData = []; // Store current search results
 
         const STATIC_FALLBACK_IMAGES = [
-            { id: 'static-1', url: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-2', url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-3', url: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-4', url: 'https://images.unsplash.com/photo-1527689368864-3a821dbccc34?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-5', url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-6', url: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-7', url: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-8', url: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-9', url: 'https://images.unsplash.com/photo-1485594050903-8e8ee7b071a8?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
-            { id: 'static-10', url: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' }
+            // --- HIỆU ỨNG TÂM LÝ (PSYCHOLOGY / MIND / BRAIN) ---
+            { id: 'psy-1', tags: ['psychology', 'tam ly', 'brain', 'mind', 'neon'], url: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'psy-2', tags: ['psychology', 'tam ly', 'thought', 'abstract', 'mind'], url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'psy-3', tags: ['psychology', 'tam ly', 'mind', 'connection', 'people'], url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'psy-4', tags: ['psychology', 'tam ly', 'brain', 'digital', 'tech'], url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'psy-5', tags: ['psychology', 'tam ly', 'books', 'study', 'mindset'], url: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'psy-6', tags: ['psychology', 'tam ly', 'illusion', 'hypnotic', 'maze'], url: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'psy-7', tags: ['psychology', 'tam ly', 'chess', 'strategy', 'mind'], url: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'psy-8', tags: ['psychology', 'tam ly', 'abstract', 'art', 'color'], url: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+
+            // --- HỒ SƠ BÍ ẨN (MYSTERY / DETECTIVE / CRIME / DARK) ---
+            { id: 'mys-1', tags: ['mystery', 'bi an', 'crime', 'shadow', 'dark'], url: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'mys-2', tags: ['mystery', 'bi an', 'detective', 'book', 'old'], url: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'mys-3', tags: ['mystery', 'bi an', 'smoke', 'silhouette', 'ghost'], url: 'https://images.unsplash.com/photo-1485594050903-8e8ee7b071a8?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'mys-4', tags: ['mystery', 'bi an', 'dark', 'fog', 'forest'], url: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'mys-5', tags: ['mystery', 'bi an', 'detective', 'magnifier', 'search'], url: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'mys-6', tags: ['mystery', 'bi an', 'clown', 'joker', 'scary'], url: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'mys-7', tags: ['mystery', 'bi an', 'cyberpunk', 'neon', 'city'], url: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'mys-8', tags: ['mystery', 'bi an', 'skull', 'death', 'crime'], url: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+
+            // --- GIẢI MÃ HÀNH VI (BEHAVIOR / BODY LANGUAGE / COMMUNICATION) ---
+            { id: 'beh-1', tags: ['behavior', 'hanh vi', 'communication', 'people', 'meeting'], url: 'https://images.unsplash.com/photo-1527689368864-3a821dbccc34?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'beh-2', tags: ['behavior', 'hanh vi', 'eyes', 'facial', 'look'], url: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'beh-3', tags: ['behavior', 'hanh vi', 'expression', 'communication', 'talk'], url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'beh-4', tags: ['behavior', 'hanh vi', 'relationship', 'discussion', 'team'], url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'beh-5', tags: ['behavior', 'hanh vi', 'handshake', 'deal', 'agreement'], url: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'beh-6', tags: ['behavior', 'hanh vi', 'body language', 'gesture', 'hands'], url: 'https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'beh-7', tags: ['behavior', 'hanh vi', 'crowd', 'street', 'people'], url: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+
+            // --- PHÁT TRIỂN BẢN THÂN (GROWTH / SUCCESS / DISCIPLINE / HABITS) ---
+            { id: 'gro-1', tags: ['growth', 'phat trien', 'target', 'success', 'arrow'], url: 'https://images.unsplash.com/photo-1485594050903-8e8ee7b071a8?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'gro-2', tags: ['growth', 'phat trien', 'climbing', 'mountain', 'hiking'], url: 'https://images.unsplash.com/photo-1520201163981-8cc95007dd2a?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'gro-3', tags: ['growth', 'phat trien', 'sunrise', 'freedom', 'sky'], url: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'gro-4', tags: ['growth', 'phat trien', 'success', 'trophy', 'celebrate'], url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'gro-5', tags: ['growth', 'phat trien', 'habit', 'running', 'sport'], url: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'gro-6', tags: ['growth', 'phat trien', 'discipline', 'meditation', 'yoga'], url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'gro-7', tags: ['growth', 'phat trien', 'creative', 'lightbulb', 'idea'], url: 'https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' }
         ];
 
         function getStaticFallbackImage(seedString) {
@@ -822,10 +849,17 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                     }
                 }
 
-                // If still no data, fallback to curated static images
+                // If still no data, fallback to curated static images (smart tag-matching search)
                 if (!data || !data.results || data.results.length === 0) {
                     console.log("Using static high-quality psychology image fallbacks...");
-                    const validResults = STATIC_FALLBACK_IMAGES.map(item => ({
+                    const cleanTags = cleanQueryForLoremFlickr(query).split(',');
+                    const matchedResults = STATIC_FALLBACK_IMAGES.filter(item => {
+                        return item.tags.some(tag => cleanTags.includes(tag));
+                    });
+                    const unmatchedResults = STATIC_FALLBACK_IMAGES.filter(item => !matchedResults.includes(item));
+                    const combinedResults = [...matchedResults, ...unmatchedResults].slice(0, 12);
+                    
+                    const validResults = combinedResults.map(item => ({
                         id: item.id,
                         urls: {
                             regular: item.url,
@@ -1020,10 +1054,17 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                     }
                 }
 
-                // If still no imageUrl, fallback to curated static images
+                // If still no imageUrl, fallback to curated static images (smart tag-matching search)
                 if (!imageUrl) {
                     console.log("Using static high-quality psychology image fallbacks for auto-search...");
-                    results = STATIC_FALLBACK_IMAGES.map(item => ({
+                    const cleanTags = cleanQueryForLoremFlickr(query).split(',');
+                    const matchedResults = STATIC_FALLBACK_IMAGES.filter(item => {
+                        return item.tags.some(tag => cleanTags.includes(tag));
+                    });
+                    const unmatchedResults = STATIC_FALLBACK_IMAGES.filter(item => !matchedResults.includes(item));
+                    const combinedResults = [...matchedResults, ...unmatchedResults].slice(0, 12);
+                    
+                    results = combinedResults.map(item => ({
                         id: item.id,
                         urls: {
                             regular: item.url,
