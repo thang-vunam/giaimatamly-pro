@@ -679,13 +679,50 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                 
                 // Fallback to keyless NAPI with CORS proxy
                 if (!data) {
-                    const proxyUrl = `https://corsproxy.io/?https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
-                    const response = await fetch(proxyUrl);
-                    if (response.ok) {
-                        const rawData = await response.json();
-                        const filteredResults = (rawData.results || []).filter(photo => !(photo.premium || photo.plus));
-                        data = { results: filteredResults };
+                    try {
+                        const proxyUrl = `https://corsproxy.io/?https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
+                        const response = await fetch(proxyUrl);
+                        if (response.ok) {
+                            const rawData = await response.json();
+                            const filteredResults = (rawData.results || []).filter(photo => !(photo.premium || photo.plus));
+                            data = { results: filteredResults };
+                        }
+                    } catch (err) {
+                        console.warn("Unsplash keyless proxy failed, falling back to LoremFlickr:", err);
                     }
+                }
+
+                // If still no data, fallback to LoremFlickr (highly reliable CORS-enabled keyless stock photos)
+                if (!data || !data.results || data.results.length === 0) {
+                    console.log("Using LoremFlickr fallback for search...");
+                    const numImages = 8;
+                    const promises = [];
+                    for (let i = 0; i < numImages; i++) {
+                        const flickrUrl = `https://loremflickr.com/800/400/${encodeURIComponent(query)}?random=${i}`;
+                        promises.push(
+                            fetch(flickrUrl)
+                                .then(res => {
+                                    if (res.ok) {
+                                        return {
+                                            id: `flickr-${i}`,
+                                            urls: {
+                                                regular: res.url,
+                                                small: res.url
+                                            },
+                                            user: {
+                                                name: 'Flickr Creative Commons'
+                                            },
+                                            alt_description: query
+                                        };
+                                    }
+                                    return null;
+                                })
+                                .catch(() => null)
+                        );
+                    }
+                    const resolvedResults = await Promise.all(promises);
+                    const validResults = resolvedResults.filter(r => r !== null);
+                    data = { results: validResults };
                 }
 
                 if (!data || !data.results || data.results.length === 0) {
@@ -809,14 +846,53 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                 
                 // Fallback to keyless NAPI with CORS proxy
                 if (!imageUrl) {
-                    const proxyUrl = `https://corsproxy.io/?https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
-                    const response = await fetch(proxyUrl);
-                    if (response.ok) {
-                        const rawData = await response.json();
-                        results = (rawData.results || []).filter(photo => !(photo.premium || photo.plus));
-                        if (results.length > 0) {
-                            imageUrl = results[0].urls.regular;
+                    try {
+                        const proxyUrl = `https://corsproxy.io/?https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=20`;
+                        const response = await fetch(proxyUrl);
+                        if (response.ok) {
+                            const rawData = await response.json();
+                            results = (rawData.results || []).filter(photo => !(photo.premium || photo.plus));
+                            if (results.length > 0) {
+                                imageUrl = results[0].urls.regular;
+                            }
                         }
+                    } catch (err) {
+                        console.warn("Auto Unsplash keyless proxy failed, falling back to LoremFlickr:", err);
+                    }
+                }
+
+                // If still no imageUrl, fallback to LoremFlickr (highly reliable CORS-enabled keyless stock photos)
+                if (!imageUrl) {
+                    console.log("Using LoremFlickr fallback for auto-search...");
+                    const numImages = 8;
+                    const promises = [];
+                    for (let i = 0; i < numImages; i++) {
+                        const flickrUrl = `https://loremflickr.com/800/400/${encodeURIComponent(query)}?random=${i}`;
+                        promises.push(
+                            fetch(flickrUrl)
+                                .then(res => {
+                                    if (res.ok) {
+                                        return {
+                                            id: `flickr-${i}`,
+                                            urls: {
+                                                regular: res.url,
+                                                small: res.url
+                                            },
+                                            user: {
+                                                name: 'Flickr Creative Commons'
+                                            },
+                                            alt_description: query
+                                        };
+                                    }
+                                    return null;
+                                })
+                                .catch(() => null)
+                        );
+                    }
+                    const resolvedResults = await Promise.all(promises);
+                    results = resolvedResults.filter(r => r !== null);
+                    if (results.length > 0) {
+                        imageUrl = results[0].urls.regular;
                     }
                 }
 
