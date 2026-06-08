@@ -640,6 +640,32 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
         // ----------------------------------------------------
         let unsplashPhotosData = []; // Store current search results
 
+        const STATIC_FALLBACK_IMAGES = [
+            { id: 'static-1', url: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-2', url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-3', url: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-4', url: 'https://images.unsplash.com/photo-1527689368864-3a821dbccc34?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-5', url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-6', url: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-7', url: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-8', url: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-9', url: 'https://images.unsplash.com/photo-1485594050903-8e8ee7b071a8?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' },
+            { id: 'static-10', url: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&h=400&q=80', author: 'Unsplash' }
+        ];
+
+        function getStaticFallbackImage(seedString) {
+            let hash = 0;
+            if (seedString) {
+                for (let i = 0; i < seedString.length; i++) {
+                    hash = seedString.charCodeAt(i) + ((hash << 5) - hash);
+                }
+            } else {
+                hash = Math.floor(Math.random() * 100);
+            }
+            const index = Math.abs(hash) % STATIC_FALLBACK_IMAGES.length;
+            return STATIC_FALLBACK_IMAGES[index].url;
+        }
+
         function cleanQueryForLoremFlickr(query) {
             if (!query) return 'psychology';
             let clean = query.replace(/['"“”()\[\]{}.,\/#!$%\^&\*;:{}=\-_`~?]/g, ' ');
@@ -754,37 +780,62 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                     }
                 }
 
-                // If still no data, fallback to LoremFlickr (highly reliable CORS-enabled keyless stock photos)
+                // If still no data, fallback to Flickr public feed via AllOrigins proxy
                 if (!data || !data.results || data.results.length === 0) {
-                    console.log("Using LoremFlickr fallback for search...");
-                    const numImages = 8;
-                    const promises = [];
+                    console.log("Using Flickr RSS/JSON feed fallback via AllOrigins...");
                     const cleanFlickrQuery = cleanQueryForLoremFlickr(query);
-                    for (let i = 0; i < numImages; i++) {
-                        const flickrUrl = `https://loremflickr.com/800/400/${encodeURIComponent(cleanFlickrQuery)}?random=${i}`;
-                        promises.push(
-                            fetch(flickrUrl)
-                                .then(res => {
-                                    if (res.ok) {
-                                        return {
-                                            id: `flickr-${i}`,
-                                            urls: {
-                                                regular: res.url,
-                                                small: res.url
-                                            },
-                                            user: {
-                                                name: 'Flickr Creative Commons'
-                                            },
-                                            alt_description: query
-                                        };
-                                    }
-                                    return null;
-                                })
-                                .catch(() => null)
-                        );
+                    const feedUrl = `https://www.flickr.com/services/feeds/photos_public.gne?tags=${encodeURIComponent(cleanFlickrQuery)}&tagmode=any&format=json&nojsoncallback=1`;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`;
+                    
+                    try {
+                        const response = await fetch(proxyUrl);
+                        if (response.ok) {
+                            const rawData = await response.json();
+                            const items = rawData.items || [];
+                            const validResults = items.map((item, idx) => {
+                                const mediaUrl = item.media.m;
+                                const highResUrl = mediaUrl.replace(/_m\.(jpg|png|gif|jpeg)$/i, '_b.$1');
+                                
+                                let author = 'Flickr Contributor';
+                                if (item.author) {
+                                    const match = item.author.match(/\("([^"]+)"\)/);
+                                    if (match) author = match[1];
+                                    else author = item.author;
+                                }
+                                
+                                return {
+                                    id: `flickr-${idx}`,
+                                    urls: {
+                                        regular: highResUrl,
+                                        small: mediaUrl
+                                    },
+                                    user: {
+                                        name: author
+                                    },
+                                    alt_description: item.title || query
+                                };
+                            });
+                            data = { results: validResults };
+                        }
+                    } catch (err) {
+                        console.warn("Flickr feed fallback failed:", err);
                     }
-                    const resolvedResults = await Promise.all(promises);
-                    const validResults = resolvedResults.filter(r => r !== null);
+                }
+
+                // If still no data, fallback to curated static images
+                if (!data || !data.results || data.results.length === 0) {
+                    console.log("Using static high-quality psychology image fallbacks...");
+                    const validResults = STATIC_FALLBACK_IMAGES.map(item => ({
+                        id: item.id,
+                        urls: {
+                            regular: item.url,
+                            small: item.url
+                        },
+                        user: {
+                            name: item.author
+                        },
+                        alt_description: query
+                    }));
                     data = { results: validResults };
                 }
 
@@ -924,37 +975,65 @@ CHỈ TRẢ VỀ JSON, KHÔNG CẦN GIẢI THÍCH GÌ THÊM.`;
                     }
                 }
 
-                // If still no imageUrl, fallback to LoremFlickr (highly reliable CORS-enabled keyless stock photos)
+                // If still no imageUrl, fallback to Flickr public feed via AllOrigins proxy
                 if (!imageUrl) {
-                    console.log("Using LoremFlickr fallback for auto-search...");
-                    const numImages = 8;
-                    const promises = [];
+                    console.log("Using Flickr RSS/JSON feed fallback for auto-search...");
                     const cleanFlickrQuery = cleanQueryForLoremFlickr(query);
-                    for (let i = 0; i < numImages; i++) {
-                        const flickrUrl = `https://loremflickr.com/800/400/${encodeURIComponent(cleanFlickrQuery)}?random=${i}`;
-                        promises.push(
-                            fetch(flickrUrl)
-                                .then(res => {
-                                    if (res.ok) {
-                                        return {
-                                            id: `flickr-${i}`,
-                                            urls: {
-                                                regular: res.url,
-                                                small: res.url
-                                            },
-                                            user: {
-                                                name: 'Flickr Creative Commons'
-                                            },
-                                            alt_description: query
-                                        };
-                                    }
-                                    return null;
-                                })
-                                .catch(() => null)
-                        );
+                    const feedUrl = `https://www.flickr.com/services/feeds/photos_public.gne?tags=${encodeURIComponent(cleanFlickrQuery)}&tagmode=any&format=json&nojsoncallback=1`;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`;
+                    
+                    try {
+                        const response = await fetch(proxyUrl);
+                        if (response.ok) {
+                            const rawData = await response.json();
+                            const items = rawData.items || [];
+                            results = items.map((item, idx) => {
+                                const mediaUrl = item.media.m;
+                                const highResUrl = mediaUrl.replace(/_m\.(jpg|png|gif|jpeg)$/i, '_b.$1');
+                                
+                                let author = 'Flickr Contributor';
+                                if (item.author) {
+                                    const match = item.author.match(/\("([^"]+)"\)/);
+                                    if (match) author = match[1];
+                                    else author = item.author;
+                                }
+                                
+                                return {
+                                    id: `flickr-${idx}`,
+                                    urls: {
+                                        regular: highResUrl,
+                                        small: mediaUrl
+                                    },
+                                    user: {
+                                        name: author
+                                    },
+                                    alt_description: item.title || query
+                                };
+                            });
+                            
+                            if (results.length > 0) {
+                                imageUrl = results[0].urls.regular;
+                            }
+                        }
+                    } catch (err) {
+                        console.warn("Flickr feed auto-search fallback failed:", err);
                     }
-                    const resolvedResults = await Promise.all(promises);
-                    results = resolvedResults.filter(r => r !== null);
+                }
+
+                // If still no imageUrl, fallback to curated static images
+                if (!imageUrl) {
+                    console.log("Using static high-quality psychology image fallbacks for auto-search...");
+                    results = STATIC_FALLBACK_IMAGES.map(item => ({
+                        id: item.id,
+                        urls: {
+                            regular: item.url,
+                            small: item.url
+                        },
+                        user: {
+                            name: item.author
+                        },
+                        alt_description: query
+                    }));
                     if (results.length > 0) {
                         imageUrl = results[0].urls.regular;
                     }
@@ -1039,9 +1118,9 @@ Trả về JSON CHÍNH XÁC:
                 document.getElementById('review-slug').value = data.slug;
                 document.getElementById('review-desc').value = data.metaDescription;
                 
-                const fallbackImgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt || 'mysterious psychological concept neon cyberpunk')}?width=800&height=400&nologo=true`;
+                const fallbackImgUrl = getStaticFallbackImage(data.imagePrompt || topic);
                 document.getElementById('review-image-url').value = fallbackImgUrl;
-                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, cleanHtmlContent(data.htmlContent), data.imagePrompt);
+                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, cleanHtmlContent(data.htmlContent), fallbackImgUrl);
                 
                 document.getElementById('unsplash-gallery-container').style.display = 'none';
                 
@@ -1091,9 +1170,9 @@ Trả về JSON: {"title":"...","slug":"...","metaDescription":"...","htmlConten
                 document.getElementById('review-desc').value = data.metaDescription;
                 document.getElementById('input-category').value = category;
                 
-                const fallbackImgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(data.imagePrompt || 'mysterious psychological concept neon cyberpunk')}?width=800&height=400&nologo=true`;
+                const fallbackImgUrl = getStaticFallbackImage(data.imagePrompt || topic);
                 document.getElementById('review-image-url').value = fallbackImgUrl;
-                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, cleanHtmlContent(data.htmlContent), data.imagePrompt);
+                document.getElementById('review-html').value = buildTemplate(data.title, data.metaDescription, category, cleanHtmlContent(data.htmlContent), fallbackImgUrl);
                 
                 document.getElementById('unsplash-gallery-container').style.display = 'none';
                 
@@ -1238,7 +1317,7 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
         function buildTemplate(title, desc, category, body, imagePromptOrUrl, dateString) {
             const imageUrl = (imagePromptOrUrl && (imagePromptOrUrl.startsWith('http://') || imagePromptOrUrl.startsWith('https://'))) 
                 ? imagePromptOrUrl 
-                : `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePromptOrUrl || 'mysterious psychological concept neon cyberpunk')}?width=800&height=400&nologo=true`;
+                : getStaticFallbackImage(imagePromptOrUrl || 'mysterious psychological concept neon cyberpunk');
             
             // Format current date if not provided
             let formattedDate = dateString;
@@ -1303,6 +1382,7 @@ Description hiện tại: "${curDesc}". ${needFixDesc ? 'Viết lại chuẩn 13
       <div class="article-meta">
         <span class="meta-item">📅 Đăng ngày: ${formattedDate}</span>
         <span class="meta-item">📁 Chuyên mục: <a href="/${category}/">${categoryName}</a></span>
+      </div>
       <figure class="article-cover-figure">
         <img src="${imageUrl}" class="cover" alt="${title}" />
         <figcaption class="article-cover-caption">${desc}</figcaption>
